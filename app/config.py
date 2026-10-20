@@ -2,9 +2,16 @@ import os
 from pathlib import Path
 
 
+def database_url():
+    value = os.getenv("DATABASE_URL")
+    if value and value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+psycopg://", 1)
+    return value
+
+
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", "5242880"))
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "instance/uploads")
