@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en-ZA" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ed102d">
+  <title>Café Coffee Day | Modern Interface</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+        extend: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#ed102d',
+              redhover: '#d00b25',
+              dark: '#1b120e',
+              roasted: '#2a1d17',
+              cream: '#faf7f2',
+              creamdark: '#eee6db',
+              amber: '#d97706',
+              accent: '#f4efe6'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Cinzel"', 'serif']
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -10px rgba(27, 18, 14, 0.08)',
+            'glow': '0 0 20px rgba(237, 16, 45, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #faf7f2;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d1c7bc;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ed102d;
+    }
+
+    /* Glassmorphism utility */
+    .glass-header {
+      background: rgba(251, 247, 242, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .tab-btn.active {
+      background-color: #ed102d;
+      color: #ffffff;
+      border-color: #ed102d;
+    }
+  </style>
+</head>
+<body class="bg-brand-cream text-brand-dark font-sans antialiased min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
+
+  <!-- TOP PROMO BANNER -->
+  <div class="bg-brand-dark text-brand-cream text-xs py-2 px-4 text-center font-medium tracking-wide flex justify-between items-center px-4 md:px-8">
+    <div class="hidden sm:block">☕ Freshly roasted beans delivered daily</div>
+    <div class="mx-auto sm:mx-0">
+      <span class="bg-brand-red/20 text-red-300 text-[10px] px-2 py-0.5 rounded-full font-bold mr-2 uppercase tracking-wider">Offer</span>
+      Get 15% OFF on your first digital order! Code: <span class="text-amber-400 font-mono font-bold">BREW15</span>
+    </div>
+    <div class="hidden md:flex items-center gap-3 text-xs opacity-80">
+      <a href="tel:+27123456789" class="hover:text-white transition"><i class="fa-solid fa-phone mr-1"></i> Support</a>
+    </div>
+  </div>
+
+  <!-- SITE HEADER / NAVIGATION -->
+  <header class="sticky top-0 z-40 glass-header border-b border-stone-200/60 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand Logo -->
+        <a class="flex items-center gap-3 group" href="#home" onclick="setActiveTab('demo')">
+          <div class="w-11 h-11 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-300">
+            <i class="fa-solid fa-mug-hot text-xl"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-display font-extrabold text-lg sm:text-xl tracking-wider text-brand-dark group-hover:text-brand-red transition-colors">
+              CAFÉ COFFEE DAY
+            </span>
+            <small class="text-[10px] font-bold tracking-widest text-stone-500 uppercase -mt-1">
+              GOOD COFFEE. GOOD DAY.
+            </small>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav aria-label="Main navigation" class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <a href="#menu" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition">
+            Menu
+          </a>
+          <a href="#track" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition">
+            Track Order
+          </a>
+          <a href="#my-orders" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition">
+            My Orders
+          </a>
+        </nav>
+
+        <!-- Header Actions (Cart + Auth + Switch View Mode) -->
+        <div class="flex items-center gap-3">
+          
+          <!-- View Toggle Button (Interactive Showcase vs Jinja Code Export) -->
+          <button id="viewToggleBtn" onclick="toggleViewMode()" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-stone-300 text-xs font-semibold text-stone-700 hover:bg-stone-100 transition">
+            <i class="fa-solid fa-code text-brand-red"></i>
+            <span id="viewToggleText">View Code Template</span>
+          </button>
+
+          <!-- Shopping Cart Link / Button -->
+          <button onclick="toggleCartDrawer()" class="relative p-2.5 text-stone-700 hover:text-brand-red hover:bg-stone-100 rounded-full transition" aria-label="Shopping Bag">
+            <i class="fa-solid fa-bag-shopping text-xl"></i>
+            <span id="cartBadgeCount" class="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              3
+            </span>
+          </button>
+
+          <!-- User Auth / Profile Dropdown -->
+          <div class="hidden md:block relative group">
+            <button class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border border-stone-200 hover:border-brand-red bg-white text-sm font-medium transition shadow-sm">
+              <div class="w-7 h-7 rounded-full bg-brand-dark text-white flex items-center justify-center text-xs font-bold">
+                JS
+              </div>
+              <span class="text-xs font-semibold">John S.</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-stone-400"></i>
+            </button>
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-stone-100 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <a href="#profile" class="block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">Profile Settings</a>
+              <a href="#customer-orders" class="block px-4 py-2 text-xs text-stone-700 hover:bg-stone-50 font-medium">Order History</a>
+              <div class="border-t border-stone-100 my-1"></div>
+              <button onclick="triggerFlash('Successfully signed out!', 'info')" class="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 font-medium">
+                Sign out
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Drawer Toggle Button -->
+          <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-stone-700 hover:bg-stone-100 focus:outline-none" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars-staggered text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div id="mobileDrawer" class="fixed inset-0 z-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+    <!-- Backdrop -->
+    <div onclick="toggleMobileMenu()" class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm"></div>
+    <!-- Drawer Panel -->
+    <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl flex flex-col justify-between p-6 overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-stone-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white">
+              <i class="fa-solid fa-mug-hot text-lg"></i>
+            </div>
+            <span class="font-display font-bold text-base text-brand-dark">Café Coffee Day</span>
+          </div>
+          <button onclick="toggleMobileMenu()" class="p-2 text-stone-400 hover:text-stone-700">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <nav class="mt-6 flex flex-col gap-2">
+          <a href="#menu" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-stone-700 hover:bg-stone-100 hover:text-brand-red transition">
+            <i class="fa-solid fa-utensils text-brand-red w-5"></i> Menu & Specials
+          </a>
+          <a href="#track" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-stone-700 hover:bg-stone-100 hover:text-brand-red transition">
+            <i class="fa-solid fa-location-dot text-brand-red w-5"></i> Track Order
+          </a>
+          <a href="#customer-orders" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-stone-700 hover:bg-stone-100 hover:text-brand-red transition">
+            <i class="fa-solid fa-receipt text-brand-red w-5"></i> My Orders
+          </a>
+          <button onclick="toggleViewMode(); toggleMobileMenu();" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-stone-700 hover:bg-stone-100 transition text-left">
+            <i class="fa-solid fa-code text-brand-red w-5"></i> Export Jinja / CSS
+          </button>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-stone-100 space-y-4">
+        <div class="flex items-center gap-3 px-2">
+          <div class="w-10 h-10 rounded-full bg-brand-dark text-white flex items-center justify-center font-bold">
+            JS
+          </div>
+          <div>
+            <div class="font-bold text-sm">John Smith</div>
+            <div class="text-xs text-stone-500">john@example.com</div>
+          </div>
+        </div>
+        <button onclick="triggerFlash('Signed out successfully.', 'info'); toggleMobileMenu();" class="w-full py-2.5 rounded-xl border border-stone-200 text-stone-700 font-semibold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition text-sm">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHOPPING BAG / CART DRAWER -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+    <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl flex flex-col justify-between p-6">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-stone-100">
+          <h3 class="font-display font-bold text-lg text-brand-dark flex items-center gap-2">
+            <i class="fa-solid fa-bag-shopping text-brand-red"></i> Your Order Bag
+          </h3>
+          <button onclick="toggleCartDrawer()" class="p-2 text-stone-400 hover:text-stone-700">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div class="mt-4 space-y-4 max-h-[55vh] overflow-y-auto pr-1">
+          <!-- Item 1 -->
+          <div class="flex items-center gap-4 p-3 bg-stone-50 rounded-2xl border border-stone-100">
+            <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=200&q=80" alt="Espresso" class="w-16 h-16 rounded-xl object-cover">
+            <div class="flex-1">
+              <h4 class="font-bold text-sm text-stone-800">Classic Espresso Roast</h4>
+              <p class="text-xs text-stone-500">Double Shot, Whole Milk</p>
+              <div class="text-sm font-extrabold text-brand-red mt-1">R 38.00</div>
+            </div>
+            <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-stone-200 text-xs font-bold">
+              <button class="hover:text-brand-red px-1">-</button>
+              <span>1</span>
+              <button class="hover:text-brand-red px-1">+</button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="flex items-center gap-4 p-3 bg-stone-50 rounded-2xl border border-stone-100">
+            <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=200&q=80" alt="Cappuccino" class="w-16 h-16 rounded-xl object-cover">
+            <div class="flex-1">
+              <h4 class="font-bold text-sm text-stone-800">Velvet Cappuccino</h4>
+              <p class="text-xs text-stone-500">Regular, Cinnamon Sprinkle</p>
+              <div class="text-sm font-extrabold text-brand-red mt-1">R 45.00</div>
+            </div>
+            <div class="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-stone-200 text-xs font-bold">
+              <button class="hover:text-brand-red px-1">-</button>
+              <span>2</span>
+              <button class="hover:text-brand-red px-1">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Footer Summary -->
+      <div class="border-t border-stone-100 pt-4 space-y-3">
+        <div class="flex justify-between text-xs text-stone-500">
+          <span>Subtotal</span>
+          <span class="font-semibold text-stone-800">R 128.00</span>
+        </div>
+        <div class="flex justify-between text-xs text-stone-500">
+          <span>Estimated Taxes</span>
+          <span class="font-semibold text-stone-800">R 19.20</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-brand-dark pt-2 border-t border-dashed border-stone-200">
+          <span>Total Order</span>
+          <span class="text-brand-red font-extrabold">R 147.20</span>
+        </div>
+        <button onclick="triggerFlash('Proceeding to secure checkout...', 'success'); toggleCartDrawer();" class="w-full py-3.5 bg-brand-red hover:bg-brand-redhover text-white rounded-xl font-bold shadow-lg shadow-red-500/20 transition flex items-center justify-center gap-2">
+          <span>Proceed to Checkout</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASH MESSAGES CONTAINER (previewing the flash-message area) -->
+  <div id="flashStack" class="fixed top-24 right-4 sm:right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+    <!-- Demo Default Flash Message -->
+    <div class="pointer-events-auto bg-emerald-50 border border-emerald-200 text-emerald-900 p-4 rounded-2xl shadow-xl flex items-start gap-3 transform transition-all duration-300">
+      <i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>
+      <div class="flex-1 text-xs">
+        <p class="font-bold text-sm text-emerald-950">Welcome back!</p>
+        <p class="text-emerald-800">You are logged in as John Smith. Enjoy your coffee experience.</p>
+      </div>
+      <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-700">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1">
+
+    <!-- VIEW CONTAINER 1: INTERACTIVE LIVE PREVIEW SHOWCASE -->
+    <div id="liveDemoView" class="block">
+      
+      <!-- HERO BANNER SECTION -->
+      <section class="relative bg-brand-dark text-white overflow-hidden py-16 md:py-24">
+        <!-- Background Decorative Glow & Pattern -->
+        <div class="absolute inset-0 bg-[radial-gradient(#ed102d_1px,transparent_1px)] [background-size:24px_24px] opacity-10"></div>
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-brand-red/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+              <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-800 border border-stone-700 text-xs font-semibold text-brand-red uppercase tracking-wider">
+                <i class="fa-solid fa-fire text-amber-500"></i> Artisanal Coffee Roastery
+              </span>
+              <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-extrabold leading-tight tracking-tight text-brand-cream">
+                Freshly Brewed <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-red via-rose-400 to-amber-300">Excellence.</span>
+              </h1>
+              <p class="text-stone-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-light">
+                Handcrafted coffee roasted from ethically sourced beans, delivered hot to your doorstep or ready for pickup. Experience the genuine taste of handcrafted perfection.
+              </p>
+
+              <!-- Call to Action Buttons -->
+              <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-2">
+                <a href="#featured-menu" class="px-7 py-3.5 bg-brand-red hover:bg-brand-redhover text-white font-bold rounded-xl shadow-glow hover:scale-105 transition duration-300 flex items-center gap-2">
+                  <span>Explore Menu</span>
+                  <i class="fa-solid fa-mug-hot"></i>
+                </a>
+                <a href="#quick-track" class="px-7 py-3.5 bg-stone-800 hover:bg-stone-700 text-white font-bold rounded-xl border border-stone-700 transition flex items-center gap-2">
+                  <span>Track Live Order</span>
+                  <i class="fa-solid fa-location-arrow"></i>
+                </a>
+              </div>
+
+              <!-- Metrics -->
+              <div class="pt-8 border-t border-stone-800/80 grid grid-cols-3 gap-4 text-center lg:text-left">
+                <div>
+                  <div class="font-display font-bold text-2xl text-brand-cream">100%</div>
+                  <div class="text-xs text-stone-400">Arabica Beans</div>
+                </div>
+                <div>
+                  <div class="font-display font-bold text-2xl text-brand-cream">15 Min</div>
+                  <div class="text-xs text-stone-400">Average Express Delivery</div>
+                </div>
+                <div>
+                  <div class="font-display font-bold text-2xl text-brand-cream">4.9 ★</div>
+                  <div class="text-xs text-stone-400">Customer Rating</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hero Image / Visual -->
+            <div class="lg:col-span-5 relative">
+              <div class="relative mx-auto max-w-md lg:max-w-none">
+                <div class="relative rounded-3xl overflow-hidden border-4 border-stone-800 shadow-2xl">
+                  <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80" alt="Espresso Barista" class="w-full h-[400px] sm:h-[480px] object-cover hover:scale-105 transition duration-700">
+                  <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent"></div>
+                  
+                  <div class="absolute bottom-6 left-6 right-6 p-4 rounded-2xl glass-card text-brand-dark">
+                    <div class="flex items-center gap-3">
+                      <div class="p-3 bg-brand-red text-white rounded-xl">
+                        <i class="fa-solid fa-award text-xl"></i>
+                      </div>
+                      <div>
+                        <div class="font-bold text-sm">Barista Choice of the Month</div>
+                        <div class="text-xs text-stone-600">Honey Lavender Cold Brew</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURED MENU & CATEGORY FILTERS -->
+      <section id="featured-menu" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-red">Curated Selections</span>
+            <h2 class="text-3xl font-display font-extrabold text-brand-dark">Explore Our Menu</h2>
+          </div>
+
+          <!-- Category Quick Filter Pills -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <button onclick="filterCategory(this, 'all')" class="cat-pill active px-4 py-2 rounded-full text-xs font-bold bg-brand-red text-white transition shadow-sm whitespace-nowrap">
+              All Items
+            </button>
+            <button onclick="filterCategory(this, 'hot')" class="cat-pill px-4 py-2 rounded-full text-xs font-bold bg-white hover:bg-stone-100 text-stone-700 transition border border-stone-200 whitespace-nowrap">
+              ☕ Hot Coffee
+            </button>
+            <button onclick="filterCategory(this, 'cold')" class="cat-pill px-4 py-2 rounded-full text-xs font-bold bg-white hover:bg-stone-100 text-stone-700 transition border border-stone-200 whitespace-nowrap">
+              🧊 Iced Brews
+            </button>
+            <button onclick="filterCategory(this, 'bakery')" class="cat-pill px-4 py-2 rounded-full text-xs font-bold bg-white hover:bg-stone-100 text-stone-700 transition border border-stone-200 whitespace-nowrap">
+              🥐 Bakery & Snacks
+            </button>
+          </div>
+        </div>
+
+        <!-- Menu Grid Container -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Product Card 1 -->
+          <div class="menu-item group bg-white rounded-3xl p-4 border border-stone-200/80 hover:shadow-xl hover:border-brand-red/30 transition-all duration-300 flex flex-col justify-between" data-category="hot">
+            <div>
+              <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-stone-100">
+                <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80" alt="Espresso" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <span class="absolute top-3 left-3 bg-brand-dark/80 text-white text-[10px] font-bold px-2.5 py-1 rounded-full backdrop-blur-md">
+                  Bestseller
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="font-bold text-base text-stone-900 group-hover:text-brand-red transition">Signature Roast Espresso</h3>
+                <span class="text-xs font-bold text-amber-500 flex items-center gap-1">
+                  <i class="fa-solid fa-star"></i> 4.9
+                </span>
+              </div>
+              <p class="text-xs text-stone-500 line-clamp-2 mb-4">
+                Rich body with subtle caramel undertones and a velvety crema finish.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-stone-100">
+              <span class="text-lg font-extrabold text-brand-dark">R 38.00</span>
+              <button onclick="addToBag('Signature Roast Espresso', 38.00)" class="px-4 py-2 bg-brand-cream hover:bg-brand-red hover:text-white text-brand-dark font-bold text-xs rounded-xl transition border border-stone-200 hover:border-brand-red flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i> Add to Bag
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Card 2 -->
+          <div class="menu-item group bg-white rounded-3xl p-4 border border-stone-200/80 hover:shadow-xl hover:border-brand-red/30 transition-all duration-300 flex flex-col justify-between" data-category="hot">
+            <div>
+              <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-stone-100">
+                <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80" alt="Cappuccino" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="font-bold text-base text-stone-900 group-hover:text-brand-red transition">Velvet Cappuccino</h3>
+                <span class="text-xs font-bold text-amber-500 flex items-center gap-1">
+                  <i class="fa-solid fa-star"></i> 4.8
+                </span>
+              </div>
+              <p class="text-xs text-stone-500 line-clamp-2 mb-4">
+                Smooth steamed foam layered over intense double espresso and cocoa dust.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-stone-100">
+              <span class="text-lg font-extrabold text-brand-dark">R 45.00</span>
+              <button onclick="addToBag('Velvet Cappuccino', 45.00)" class="px-4 py-2 bg-brand-cream hover:bg-brand-red hover:text-white text-brand-dark font-bold text-xs rounded-xl transition border border-stone-200 hover:border-brand-red flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i> Add to Bag
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Card 3 -->
+          <div class="menu-item group bg-white rounded-3xl p-4 border border-stone-200/80 hover:shadow-xl hover:border-brand-red/30 transition-all duration-300 flex flex-col justify-between" data-category="cold">
+            <div>
+              <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-stone-100">
+                <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=600&q=80" alt="Iced Caramel Macchiato" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <span class="absolute top-3 left-3 bg-brand-red text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                  Cold Favorite
+                </span>
+              </div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="font-bold text-base text-stone-900 group-hover:text-brand-red transition">Iced Caramel Macchiato</h3>
+                <span class="text-xs font-bold text-amber-500 flex items-center gap-1">
+                  <i class="fa-solid fa-star"></i> 5.0
+                </span>
+              </div>
+              <p class="text-xs text-stone-500 line-clamp-2 mb-4">
+                Vanilla milk drizzled with buttery caramel over slow-drip cold brew ice.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-stone-100">
+              <span class="text-lg font-extrabold text-brand-dark">R 52.00</span>
+              <button onclick="addToBag('Iced Caramel Macchiato', 52.00)" class="px-4 py-2 bg-brand-cream hover:bg-brand-red hover:text-white text-brand-dark font-bold text-xs rounded-xl transition border border-stone-200 hover:border-brand-red flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i> Add to Bag
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Card 4 -->
+          <div class="menu-item group bg-white rounded-3xl p-4 border border-stone-200/80 hover:shadow-xl hover:border-brand-red/30 transition-all duration-300 flex flex-col justify-between" data-category="bakery">
+            <div>
+              <div class="relative rounded-2xl overflow-hidden aspect-square mb-4 bg-stone-100">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80" alt="Butter Croissant" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              </div>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="font-bold text-base text-stone-900 group-hover:text-brand-red transition">Artisan Butter Croissant</h3>
+                <span class="text-xs font-bold text-amber-500 flex items-center gap-1">
+                  <i class="fa-solid fa-star"></i> 4.7
+                </span>
+              </div>
+              <p class="text-xs text-stone-500 line-clamp-2 mb-4">
+                Flaky, golden layers baked fresh daily using imported French butter.
+              </p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-stone-100">
+              <span class="text-lg font-extrabold text-brand-dark">R 32.00</span>
+              <button onclick="addToBag('Artisan Butter Croissant', 32.00)" class="px-4 py-2 bg-brand-cream hover:bg-brand-red hover:text-white text-brand-dark font-bold text-xs rounded-xl transition border border-stone-200 hover:border-brand-red flex items-center gap-1.5">
+                <i class="fa-solid fa-plus text-xs"></i> Add to Bag
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- LIVE ORDER TRACKING QUICK WIDGET -->
+      <section id="quick-track" class="py-12 bg-stone-100 border-y border-stone-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-stone-200">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+              
+              <div class="space-y-1 text-center md:text-left">
+                <span class="text-xs font-bold text-brand-red uppercase tracking-wider">Live Tracker</span>
+                <h3 class="text-xl font-display font-extrabold text-brand-dark">Track Your Active Order</h3>
+                <p class="text-xs text-stone-500">Enter your order ID below to check live barista preparation status.</p>
+              </div>
+
+              <div class="w-full md:w-auto flex flex-col sm:flex-row gap-2">
+                <div class="relative flex-1">
+                  <input type="text" id="orderTrackInput" placeholder="e.g. CCD-8942" class="w-full sm:w-64 px-4 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-semibold text-stone-800 focus:outline-none focus:border-brand-red">
+                </div>
+                <button onclick="simulateTrackOrder()" class="px-6 py-3 bg-brand-dark hover:bg-brand-roasted text-white font-bold text-xs rounded-xl transition shadow-md">
+                  Track Status
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Simulated Tracking Result Box -->
+            <div id="trackingResult" class="hidden mt-6 pt-6 border-t border-stone-100">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <span class="text-xs text-stone-400">Order Reference</span>
+                  <div id="trackCodeDisplay" class="font-bold text-stone-800 text-sm">CCD-8942</div>
+                </div>
+                <div class="text-right">
+                  <span class="text-xs text-stone-400">Estimated Arrival</span>
+                  <div class="font-bold text-brand-red text-sm">12 Minutes</div>
+                </div>
+              </div>
+
+              <!-- Progress Steps -->
+              <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-bold">
+                <div class="text-emerald-600">
+                  <div class="h-2 rounded-full bg-emerald-500 mb-2"></div>
+                  Received
+                </div>
+                <div class="text-emerald-600">
+                  <div class="h-2 rounded-full bg-emerald-500 mb-2"></div>
+                  Brewing
+                </div>
+                <div class="text-amber-500">
+                  <div class="h-2 rounded-full bg-amber-400 mb-2 animate-pulse"></div>
+                  Out for Delivery
+                </div>
+                <div class="text-stone-300">
+                  <div class="h-2 rounded-full bg-stone-200 mb-2"></div>
+                  Delivered
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- VIEW CONTAINER 2: CODE EXPORT PANEL (Flask/Jinja template & site.css) -->
+    <div id="codeExportView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-xl space-y-8">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
+          <div>
+            <h2 class="text-2xl font-display font-extrabold text-brand-dark">Flask / Jinja2 Code Export</h2>
+            <p class="text-xs text-stone-500">Copy the updated HTML base template or the custom CSS stylesheet directly into your project.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="switchCodeTab('jinja')" id="tabJinjaBtn" class="tab-btn active px-4 py-2 text-xs font-bold rounded-xl border border-stone-300 transition">
+              Jinja2 Template (`layout.html`)
+            </button>
+            <button onclick="switchCodeTab('css')" id="tabCssBtn" class="tab-btn px-4 py-2 text-xs font-bold rounded-xl border border-stone-300 text-stone-700 transition">
+              Stylesheet (`site.css`)
+            </button>
+          </div>
+        </div>
+
+        <!-- JINJA CODE BOX -->
+        <div id="jinjaCodeContent" class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-stone-600 font-mono">templates/layout.html</span>
+            <button onclick="copyCode('jinjaRawCode')" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-regular fa-copy"></i> Copy Jinja Code
+            </button>
+          </div>
+          <pre class="bg-brand-dark text-stone-200 p-5 rounded-2xl text-xs font-mono overflow-x-auto border border-stone-800 max-h-[500px]"><code id="jinjaRawCode">{% raw %}&lt;!doctype html&gt;
+&lt;html lang="en-ZA" class="scroll-smooth"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;meta name="theme-color" content="#ed102d"&gt;
+  &lt;title&gt;{% block title %}Café Coffee Day{% endblock %}&lt;/title&gt;
+  
+  &lt;!-- Fonts --&gt;
+  &lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+  &lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+  &lt;link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"&gt;
+  
+  &lt;!-- Tailwind CDN &amp; Custom Site CSS --&gt;
+  &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+  &lt;link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}"&gt;
+  &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"&gt;
+&lt;/head&gt;
+&lt;body class="bg-brand-cream text-brand-dark font-sans antialiased min-h-screen flex flex-col"&gt;
+
+  &lt;!-- Header Navigation --&gt;
+  &lt;header class="sticky top-0 z-40 glass-header border-b border-stone-200/60"&gt;
+    &lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"&gt;
+      &lt;div class="flex items-center justify-between h-20"&gt;
+        
+        &lt;a class="flex items-center gap-3 group" href="{{ url_for('shop.home') }}"&gt;
+          &lt;div class="w-11 h-11 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition"&gt;
+            &lt;i class="fa-solid fa-mug-hot text-xl"&gt;&lt;/i&gt;
+          &lt;/div&gt;
+          &lt;div class="flex flex-col"&gt;
+            &lt;span class="font-display font-extrabold text-lg sm:text-xl tracking-wider text-brand-dark"&gt;CAFÉ COFFEE DAY&lt;/span&gt;
+            &lt;small class="text-[10px] font-bold tracking-widest text-stone-500 uppercase -mt-1"&gt;GOOD COFFEE. GOOD DAY.&lt;/small&gt;
+          &lt;/div&gt;
+        &lt;/a&gt;
+
+        &lt;nav aria-label="Main navigation" class="hidden md:flex items-center space-x-2"&gt;
+          &lt;a href="{{ url_for('shop.menu') }}" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition"&gt;Menu&lt;/a&gt;
+          &lt;a href="{{ url_for('shop.track') }}" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition"&gt;Track Order&lt;/a&gt;
+          {% if current_user.is_authenticated and current_user.role == 'customer' %}
+            &lt;a href="{{ url_for('shop.customer_orders') }}" class="px-4 py-2 rounded-lg text-sm font-semibold text-stone-700 hover:text-brand-red hover:bg-stone-100 transition"&gt;My Orders&lt;/a&gt;
+          {% endif %}
+        &lt;/nav&gt;
+
+        &lt;div class="flex items-center gap-3"&gt;
+          &lt;a href="{{ url_for('shop.cart') }}" class="cart-link relative p-2.5 text-stone-700 hover:text-brand-red hover:bg-stone-100 rounded-full transition" aria-label="Shopping Bag"&gt;
+            &lt;i class="fa-solid fa-bag-shopping text-xl"&gt;&lt;/i&gt;
+            {% if cart_count and cart_count &gt; 0 %}
+            &lt;span class="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm"&gt;
+              {{ cart_count }}
+            &lt;/span&gt;
+            {% endif %}
+          &lt;/a&gt;
+
+          {% if current_user.is_authenticated %}
+            {% if current_user.role == 'customer' %}
+              &lt;form class="nav-form hidden md:block" method="post" action="{{ url_for('auth.customer_logout') }}"&gt;
+                &lt;input type="hidden" name="csrf_token" value="{{ csrf_token() }}"&gt;
+                &lt;button type="submit" class="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold transition"&gt;Sign Out&lt;/button&gt;
+              &lt;/form&gt;
+            {% else %}
+              &lt;a href="{{ url_for('admin.dashboard') }}" class="px-4 py-2 rounded-xl bg-brand-dark text-white text-xs font-bold transition"&gt;Admin Panel&lt;/a&gt;
+            {% endif %}
+          {% else %}
+            &lt;a href="{{ url_for('auth.customer_login') }}" class="px-4 py-2 rounded-xl bg-brand-red hover:bg-brand-redhover text-white text-xs font-bold shadow-md transition"&gt;Sign In&lt;/a&gt;
+          {% endif %}
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;main class="flex-1"&gt;
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        &lt;div class="flash-stack fixed top-24 right-4 z-50 flex flex-col gap-3 max-w-sm w-full" role="status"&gt;
+          {% for category, message in messages %}
+            &lt;div class="flash p-4 rounded-2xl shadow-xl border flex items-center gap-3 {{ category }}"&gt;
+              &lt;p class="text-xs font-medium"&gt;{{ message }}&lt;/p&gt;
+            &lt;/div&gt;
+          {% endfor %}
+        &lt;/div&gt;
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  &lt;/main&gt;
+
+  &lt;!-- Footer --&gt;
+  &lt;footer class="site-footer bg-brand-dark text-brand-cream border-t border-stone-800 pt-16 pb-8"&gt;
+    &lt;div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12"&gt;
+      &lt;div class="space-y-4"&gt;
+        &lt;a class="flex items-center gap-2" href="{{ url_for('shop.home') }}"&gt;
+          &lt;div class="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center text-white"&gt;
+            &lt;i class="fa-solid fa-mug-hot text-sm"&gt;&lt;/i&gt;
+          &lt;/div&gt;
+          &lt;span class="font-display font-bold text-base tracking-wider"&gt;CAFÉ COFFEE DAY&lt;/span&gt;
+        &lt;/a&gt;
+        &lt;p class="text-xs text-stone-400"&gt;Freshly made, just for your day. Exceptional coffee beans handpicked and crafted with passion.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;h4 class="font-bold text-sm mb-4 text-white uppercase tracking-wider"&gt;Quick Links&lt;/h4&gt;
+        &lt;ul class="space-y-2 text-xs text-stone-400"&gt;
+          &lt;li&gt;&lt;a href="{{ url_for('shop.menu') }}" class="hover:text-brand-red transition"&gt;Order from Menu&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="{{ url_for('shop.track') }}" class="hover:text-brand-red transition"&gt;Track Order Status&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="{{ url_for('shop.image_credits') }}" class="hover:text-brand-red transition"&gt;Image Credits&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;h4 class="font-bold text-sm mb-4 text-white uppercase tracking-wider"&gt;Opening Hours&lt;/h4&gt;
+        &lt;p class="text-xs text-stone-400 leading-relaxed"&gt;Mon - Fri: 06:30 AM - 08:00 PM&lt;br&gt;Sat - Sun: 07:30 AM - 09:00 PM&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div&gt;
+        &lt;h4 class="font-bold text-sm mb-4 text-white uppercase tracking-wider"&gt;Newsletter&lt;/h4&gt;
+        &lt;div class="flex gap-2"&gt;
+          &lt;input type="email" placeholder="Your email" class="px-3 py-2 bg-stone-800 text-xs rounded-xl border border-stone-700 text-white w-full focus:outline-none focus:border-brand-red"&gt;
+          &lt;button class="px-4 py-2 bg-brand-red text-white text-xs font-bold rounded-xl hover:bg-brand-redhover transition"&gt;Join&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="text-center text-xs text-stone-500 border-t border-stone-800/60 pt-6"&gt;
+      &amp;copy; 2026 Café Coffee Day. All rights reserved.
+    &lt;/div&gt;
+  &lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;{% endraw %}</code></pre>
+        </div>
+
+        <!-- CSS CODE BOX -->
+        <div id="cssCodeContent" class="hidden space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-stone-600 font-mono">static/site.css</span>
+            <button onclick="copyCode('cssRawCode')" class="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-regular fa-copy"></i> Copy CSS Stylesheet
+            </button>
+          </div>
+          <pre class="bg-brand-dark text-stone-200 p-5 rounded-2xl text-xs font-mono overflow-x-auto border border-stone-800 max-h-[500px]"><code id="cssRawCode">/* Modern Custom Styles for Café Coffee Day site.css */
+
+/* Custom Color Variable Tokens */
+:root {
+  --brand-red: #ed102d;
+  --brand-red-hover: #d00b25;
+  --brand-dark: #1b120e;
+  --brand-cream: #faf7f2;
+}
+
+/* Glassmorphism Header */
+.glass-header {
+  background: rgba(251, 247, 242, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Flash Messages Alert Styling */
+.flash {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 1rem;
+}
+
+.flash.success {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+
+.flash.error {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.flash.info {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Interactive Card Hover Animations */
+.menu-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-4px);
+}</code></pre>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer bg-brand-dark text-brand-cream border-t border-stone-800 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      
+      <!-- Brand Info -->
+      <div class="space-y-4">
+        <a class="flex items-center gap-2" href="#home" onclick="setActiveTab('demo')">
+          <div class="w-9 h-9 bg-brand-red rounded-xl flex items-center justify-center text-white">
+            <i class="fa-solid fa-mug-hot text-base"></i>
+          </div>
+          <span class="font-display font-extrabold text-lg tracking-wider text-white">CAFÉ COFFEE DAY</span>
+        </a>
+        <p class="text-xs text-stone-400 leading-relaxed">
+          Freshly made, just for your day. Handpicked artisanal coffee beans roasted to perfection daily.
+        </p>
+        <div class="flex gap-3 text-stone-400 text-sm">
+          <a href="#" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-brand-red hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-brand-red hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="w-8 h-8 rounded-full bg-stone-800 hover:bg-brand-red hover:text-white flex items-center justify-center transition"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <!-- <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Quick Links</h4>
+        <ul class="space-y-2 text-xs text-stone-400">
+          <li><a href="#featured-menu" class="hover:text-brand-red transition">Order from Menu</a></li>
+          <li><a href="#quick-track" class="hover:text-brand-red transition">Track Order Status</a></li>
+          <li><a href="#my-orders" class="hover:text-brand-red transition">Customer Account</a></li>
+          <li><a href="#" class="hover:text-brand-red transition">Image Credits</a></li>
+        </ul>
+      </div> -->
+
+      <!-- Hours & Location -->
+      <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Store Hours</h4>
+        <div class="text-xs text-stone-400 space-y-1">
+          <p><span class="text-stone-200">Mon - Fri:</span> 06:30 AM - 08:00 PM</p>
+          <p><span class="text-stone-200">Sat - Sun:</span> 07:30 AM - 09:00 PM</p>
+          <p class="text-emerald-400 text-[11px] font-semibold mt-2">● Currently Open & Brewing</p>
+        </div>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Stay Connected</h4>
+        <p class="text-xs text-stone-400 mb-3">Subscribe for exclusive coffee drop alerts and special discounts.</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Enter email address" class="px-3.5 py-2.5 bg-stone-800 text-xs rounded-xl border border-stone-700 text-white w-full focus:outline-none focus:border-brand-red">
+          <button onclick="triggerFlash('Thank you for subscribing!', 'success')" class="px-4 py-2.5 bg-brand-red hover:bg-brand-redhover text-white text-xs font-bold rounded-xl transition shadow-md">
+            Join
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
+      <p>&copy; 2026 Café Coffee Day. All rights reserved.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:text-stone-300 transition">Privacy Policy</a>
+        <a href="#" class="hover:text-stone-300 transition">Terms of Service</a>
+        <a href="#" class="hover:text-stone-300 transition">Image Credits</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+  <script>
+    let currentCartCount = 3;
+
+    // Toggle Mobile Navigation Drawer
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      drawer.classList.toggle('translate-x-full');
+    }
+
+    // Toggle Cart Drawer
+    function toggleCartDrawer() {
+      const drawer = document.getElementById('cartDrawer');
+      drawer.classList.toggle('translate-x-full');
+    }
+
+    // Toggle between Live Preview Mode & Jinja Code Export View
+    function toggleViewMode() {
+      const liveView = document.getElementById('liveDemoView');
+      const codeView = document.getElementById('codeExportView');
+      const toggleText = document.getElementById('viewToggleText');
+
+      if (liveView.classList.contains('hidden')) {
+        liveView.classList.remove('hidden');
+        codeView.classList.add('hidden');
+        toggleText.innerText = 'View Code Template';
+      } else {
+        liveView.classList.add('hidden');
+        codeView.classList.remove('hidden');
+        toggleText.innerText = 'Back to Live Demo';
+      }
+    }
+
+    // Category Filter Function
+    function filterCategory(btn, category) {
+      document.querySelectorAll('.cat-pill').forEach(el => {
+        el.classList.remove('bg-brand-red', 'text-white');
+        el.classList.add('bg-white', 'text-stone-700');
+      });
+      btn.classList.remove('bg-white', 'text-stone-700');
+      btn.classList.add('bg-brand-red', 'text-white');
+
+      const items = document.querySelectorAll('.menu-item');
+      items.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Interactive Add To Bag Button
+    function addToBag(itemName, price) {
+      currentCartCount++;
+      document.getElementById('cartBadgeCount').innerText = currentCartCount;
+      triggerFlash(`Added 1x "${itemName}" (R ${price.toFixed(2)}) to your bag!`, 'success');
+    }
+
+    // Trigger Dynamic Flash Toast Notification
+    function triggerFlash(message, category) {
+      const stack = document.getElementById('flashStack');
+      const toast = document.createElement('div');
+      
+      let bgStyles = 'bg-emerald-50 border-emerald-200 text-emerald-900';
+      let icon = 'fa-circle-check text-emerald-600';
+
+      if (category === 'error') {
+        bgStyles = 'bg-red-50 border-red-200 text-red-900';
+        icon = 'fa-circle-exclamation text-red-600';
+      } else if (category === 'info') {
+        bgStyles = 'bg-blue-50 border-blue-200 text-blue-900';
+        icon = 'fa-circle-info text-blue-600';
+      }
+
+      toast.className = `pointer-events-auto p-4 rounded-2xl shadow-xl border flex items-start gap-3 transition-all duration-300 ${bgStyles}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${icon} text-lg mt-0.5"></i>
+        <div class="flex-1 text-xs font-semibold">${message}</div>
+        <button onclick="this.parentElement.remove()" class="text-stone-400 hover:text-stone-700">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      `;
+
+      stack.appendChild(toast);
+
+      // Auto dismiss after 4 seconds
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-10px)';
+          setTimeout(() => toast.remove(), 300);
+        }
+      }, 4000);
+    }
+
+    // Switch Code Tab in Export Section
+    function switchCodeTab(tab) {
+      const jinjaContent = document.getElementById('jinjaCodeContent');
+      const cssContent = document.getElementById('cssCodeContent');
+      const jinjaBtn = document.getElementById('tabJinjaBtn');
+      const cssBtn = document.getElementById('tabCssBtn');
+
+      if (tab === 'jinja') {
+        jinjaContent.classList.remove('hidden');
+        cssContent.classList.add('hidden');
+        jinjaBtn.classList.add('active');
+        cssBtn.classList.remove('active');
+      } else {
+        jinjaContent.classList.add('hidden');
+        cssContent.classList.remove('hidden');
+        cssBtn.classList.add('active');
+        jinjaBtn.classList.remove('active');
+      }
+    }
+
+    // Copy Code Helper
+    function copyCode(elementId) {
+      const codeText = document.getElementById(elementId).innerText;
+      const textArea = document.createElement('textarea');
+      textArea.value = codeText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      triggerFlash('Code copied to clipboard!', 'info');
+    }
+
+    // Simulate Order Tracker Widget
+    function simulateTrackOrder() {
+      const input = document.getElementById('orderTrackInput').value;
+      const resultBox = document.getElementById('trackingResult');
+      const trackCodeDisplay = document.getElementById('trackCodeDisplay');
+
+      if (input.trim() !== '') {
+        trackCodeDisplay.innerText = input.toUpperCase();
+      } else {
+        trackCodeDisplay.innerText = 'CCD-8942';
+      }
+
+      resultBox.classList.remove('hidden');
+      triggerFlash('Order status updated.', 'info');
+    }
+  </script>
+</body>
+</html>

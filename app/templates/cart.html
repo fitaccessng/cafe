@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Your bag | Café Coffee Day{% endblock %}
+{% block content %}
+<section class="section narrow-section">
+  <p class="eyebrow">THE GOOD STUFF IS ALMOST YOURS</p><h1 class="page-title">Your bag<span>.</span></h1>
+  {% if stale_cart %}<div class="flash error" role="status">Some items or quantities are no longer available. Remove them from your bag to continue.</div><form method="post" class="stale-cart-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="clear_stale"><button class="small-button danger-button" type="submit">Remove unavailable items</button></form>{% endif %}
+  {% if lines %}
+  <div class="cart-list">{% for variant, quantity in lines %}
+    <article class="cart-row"><div class="cart-item-info"><h2>{{ variant.product.name }}</h2><p>{{ variant.name }} · {{ variant.price_minor|zar }} each{% if variant.product.stock_quantity is not none %} · {{ variant.product.stock_quantity }} in stock{% endif %}</p></div>
+      <form method="post" class="quantity-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="variant_id" value="{{ variant.id }}"><input type="hidden" name="action" value="update"><label class="sr-only" for="qty-{{ variant.id }}">Quantity for {{ variant.product.name }}</label><input id="qty-{{ variant.id }}" name="quantity" type="number" min="1" max="20" value="{{ quantity }}"><button class="small-button" type="submit">Update</button></form>
+      {% if variant.product.variants|selectattr('active')|list|length > 1 %}<form method="post" class="variant-change"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="variant_id" value="{{ variant.id }}"><input type="hidden" name="action" value="change_variant"><label class="sr-only" for="cart-variant-{{ variant.id }}">Change size for {{ variant.product.name }}</label><select id="cart-variant-{{ variant.id }}" name="new_variant_id">{% for option in variant.product.variants if option.active %}<option value="{{ option.id }}" {{ 'selected' if option.id == variant.id else '' }}>{{ option.name }} · {{ option.price_minor|zar }}</option>{% endfor %}</select><button class="small-button" type="submit">Change size</button></form>{% endif %}
+      <strong>{{ (variant.price_minor * quantity)|zar }}</strong><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="variant_id" value="{{ variant.id }}"><input type="hidden" name="action" value="remove"><button class="icon-button" type="submit" aria-label="Remove {{ variant.product.name }}">×</button></form>
+    </article>{% endfor %}</div>
+  <div class="cart-total"><span>Subtotal</span><strong>{{ subtotal|zar }}</strong></div><p class="muted">Delivery charges and applicable taxes are calculated at checkout.</p><div class="cart-actions"><a class="text-link" href="{{ url_for('shop.menu') }}">← Keep browsing</a><a class="button button-red" href="{{ url_for('shop.checkout') }}">Continue to checkout <span aria-hidden="true">→</span></a></div>
+  {% else %}<div class="empty-state"><span>00</span><h2>Your bag is taking a breather.</h2><p>Good things start with a little browsing.</p><a class="button button-red" href="{{ url_for('shop.menu') }}">Explore the menu</a></div>{% endif %}
+</section>
+{% endblock %}

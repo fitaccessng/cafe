@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en-ZA" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ed102d">
+  <title>Café Coffee Day | Modern Homepage Template</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#ed102d',
+              redhover: '#d00b25',
+              dark: '#18110e',
+              roasted: '#281b15',
+              cream: '#faf6f0',
+              creamdark: '#eee4d8',
+              amber: '#d97706',
+              accent: '#f3ece1'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Cinzel"', 'serif']
+          },
+          boxShadow: {
+            'soft': '0 12px 32px -10px rgba(24, 17, 14, 0.08)',
+            'glow': '0 0 25px rgba(237, 16, 45, 0.3)',
+            'card': '0 20px 40px -15px rgba(24, 17, 14, 0.07)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #faf6f0;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d4c8b9;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ed102d;
+    }
+
+    /* Glassmorphism utility */
+    .glass-header {
+      background: rgba(250, 246, 240, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+    }
+
+    .glass-dark {
+      background: rgba(24, 17, 14, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn.active {
+      background-color: #ed102d;
+      color: #ffffff;
+      border-color: #ed102d;
+    }
+
+    /* Hero Badge Rotation Animation */
+    @keyframes rotateStamp {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-stamp {
+      animation: rotateStamp 20s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-brand-cream text-brand-dark font-sans antialiased min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
+
+  <!-- PREVIEW CONTROLLER TOOLBAR (For Interactive Demonstration) -->
+  <div class="bg-brand-dark border-b border-stone-800 text-stone-300 text-xs py-2 px-4 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-50">
+   
+  </div>
+
+  <!-- SITE HEADER NAVIGATION -->
+  <header class="glass-header border-b border-stone-200/70 sticky top-9 z-40 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Brand Logo -->
+        <a class="flex items-center gap-3 group" href="{{ url_for('shop.home') }}">
+          <div class="w-11 h-11 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-300">
+            <i class="fa-solid fa-mug-hot text-xl"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-display font-black text-lg sm:text-xl tracking-wider text-brand-dark group-hover:text-brand-red transition-colors">
+              CAFÉ COFFEE DAY
+            </span>
+            <small class="text-[10px] font-bold tracking-widest text-stone-500 uppercase -mt-1">
+              GOOD COFFEE. GOOD DAY.
+            </small>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav aria-label="Main navigation" class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <a href="{{ url_for('shop.menu') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-stone-700 hover:text-brand-red hover:bg-white transition">
+            Menu
+          </a>
+          <a href="#categories" class="px-4 py-2 rounded-xl text-sm font-bold text-stone-700 hover:text-brand-red hover:bg-white transition">
+            Categories
+          </a>
+          <a href="#featured" class="px-4 py-2 rounded-xl text-sm font-bold text-stone-700 hover:text-brand-red hover:bg-white transition">
+            House Favourites
+          </a>
+          <a href="{{ url_for('shop.track') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-stone-700 hover:text-brand-red hover:bg-white transition">
+            Track Order
+          </a>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="flex items-center gap-3">
+          <!-- Cart Link -->
+          <a href="{{ url_for('shop.cart') }}" class="relative p-2.5 text-stone-700 hover:text-brand-red hover:bg-white rounded-full transition" aria-label="Shopping Bag">
+            <i class="fa-solid fa-bag-shopping text-xl"></i>
+            <span class="absolute -top-1 -right-1 bg-brand-red text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              {{ cart_count }}
+            </span>
+          </a>
+
+          <!-- Order Now CTA -->
+          <a href="{{ url_for('shop.menu') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-brand-dark hover:bg-brand-roasted text-white rounded-xl text-xs font-bold transition shadow-md">
+            <span>Order Online</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </a>
+
+          <!-- Mobile Menu Drawer Toggle -->
+          <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl text-stone-700 hover:bg-stone-100 focus:outline-none" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars-staggered text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div id="mobileDrawer" class="fixed inset-0 z-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+    <div onclick="toggleMobileMenu()" class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-4/5 max-w-sm bg-white shadow-2xl flex flex-col justify-between p-6 overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between pb-6 border-b border-stone-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white">
+              <i class="fa-solid fa-mug-hot text-lg"></i>
+            </div>
+            <span class="font-display font-bold text-base text-brand-dark">Café Coffee Day</span>
+          </div>
+          <button onclick="toggleMobileMenu()" class="p-2 text-stone-400 hover:text-stone-700">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+
+        <nav class="mt-6 flex flex-col gap-2">
+          <a href="{{ url_for('shop.menu') }}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-stone-700 hover:bg-brand-cream hover:text-brand-red transition">
+            <i class="fa-solid fa-utensils text-brand-red w-5"></i> Menu & Specials
+          </a>
+          <a href="#categories" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-stone-700 hover:bg-brand-cream hover:text-brand-red transition">
+            <i class="fa-solid fa-layer-group text-brand-red w-5"></i> Categories
+          </a>
+          <a href="#featured" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-stone-700 hover:bg-brand-cream hover:text-brand-red transition">
+            <i class="fa-solid fa-star text-brand-red w-5"></i> House Favourites
+          </a>
+          <a href="{{ url_for('shop.track') }}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-stone-700 hover:bg-brand-cream hover:text-brand-red transition">
+            <i class="fa-solid fa-location-dot text-brand-red w-5"></i> Track Order
+          </a>
+        </nav>
+      </div>
+
+      <div class="pt-6 border-t border-stone-100">
+        <a href="{{ url_for('shop.menu') }}" onclick="toggleMobileMenu()" class="w-full py-3 bg-brand-red hover:bg-brand-redhover text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+          <span>Order Now</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN BODY CONTENT -->
+  <main class="flex-1">
+
+    <!-- VIEW MODE 1: INTERACTIVE LIVE PREVIEW -->
+    <div id="livePreviewContainer" class="block">
+      
+      <!-- PROMO BANNER SECTION (previewing the configured promotion) -->
+      <div id="promoBannerWrapper" style="margin-top: 10%;">
+        <a class="group relative bg-gradient-to-r from-brand-red via-red-600 to-amber-600 text-white text-xs py-3 px-4 flex items-center justify-center gap-3 font-semibold shadow-md overflow-hidden transition-all duration-300" href="{{ url_for('shop.menu') }}">
+          <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition"></div>
+          <span class="bg-white text-brand-red text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">
+            THIS WEEK AT THE CAFÉ
+          </span>
+          <span id="promoBannerText" class="truncate font-medium text-amber-50">
+            Enjoy 20% off all artisanal cold brews &amp; freshly baked croissants! Use code: <span class="font-mono font-bold text-white underline">BREW20</span>
+          </span>
+          <b aria-hidden="true" class="group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-200">↗</b>
+        </a>
+      </div>
+
+      <!-- HERO SECTION -->
+      <section class="relative bg-brand-dark text-brand-cream overflow-hidden py-16 lg:py-24 border-b border-stone-800">
+        <!-- Ambient Radial Background Lighting -->
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-red/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px] opacity-5"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            <!-- Hero Copy -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-bold text-amber-300 tracking-widest uppercase backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                YOUR DAILY PAUSE, POURED FRESH
+              </div>
+
+              <h1 class="text-4xl sm:text-6xl lg:text-7xl font-display font-black leading-[1.1] tracking-tight text-white">
+                Make today <br>
+                <em class="not-italic text-transparent bg-clip-text bg-gradient-to-r from-brand-red via-rose-300 to-amber-200 font-serif italic">a good day.</em>
+              </h1>
+
+              <p class="text-stone-300 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+                From the first cappuccino to the last bite, your favourites are just around the corner. Crafted with ethically sourced single-origin beans.
+              </p>
+
+              <!-- Hero Actions -->
+              <div class="flex flex-wrap justify-center lg:justify-start items-center gap-4 pt-4">
+                <a class="px-8 py-4 bg-brand-red hover:bg-brand-redhover text-white font-extrabold rounded-2xl shadow-glow hover:scale-[1.02] transition duration-300 flex items-center gap-2 text-sm" href="{{ url_for('shop.menu') }}">
+                  <span>Order now</span>
+                  <span aria-hidden="true" class="text-base">↗</span>
+                </a>
+                <a class="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl border border-white/15 backdrop-blur-md transition flex items-center gap-2 text-sm" href="#categories">
+                  <span>Explore menu</span>
+                  <span aria-hidden="true" class="text-base">↓</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Hero Photo & Badge Stamp -->
+            <div class="lg:col-span-5 relative">
+              <div class="relative mx-auto max-w-md lg:max-w-none">
+                
+                <!-- Main Visual Image Card -->
+                <div class="relative rounded-3xl overflow-hidden border-4 border-stone-800 shadow-2xl aspect-[4/5] group">
+                  <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80" alt="Freshly brewed coffee on a café counter" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                  <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/20 to-transparent"></div>
+                  
+                  <div class="absolute bottom-6 left-6 right-6 p-4 rounded-2xl glass-dark text-white space-y-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">Café Feature</span>
+                      <span class="text-xs font-bold text-stone-300"><i class="fa-solid fa-star text-amber-400"></i> 4.9 / 5</span>
+                    </div>
+                    <div class="font-display font-bold text-base">Signature Espresso Extraction</div>
+                  </div>
+                </div>
+
+                <!-- Circular Animated Stamp Badge -->
+                <div class="absolute -bottom-6 -left-6 sm:-left-8 w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-brand-red text-white p-2 shadow-2xl flex items-center justify-center border-4 border-brand-dark">
+                  <div class="relative w-full h-full rounded-full border border-dashed border-white/40 flex items-center justify-center text-center">
+                    <svg class="w-full h-full animate-stamp absolute inset-0" viewBox="0 0 100 100">
+                      <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+                      <text class="text-[10.5px] font-bold uppercase tracking-widest fill-white">
+                        <textPath href="#circlePath" startOffset="0%">
+                          BREWED FOR YOU • BREWED FOR YOU •
+                        </textPath>
+                      </text>
+                    </svg>
+                    <i class="fa-solid fa-mug-saucer text-xl text-white"></i>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICE STRIP SECTION -->
+      <section class="bg-white border-b border-stone-200/80 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            
+            <!-- Service item 1 -->
+            <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-cream/60 border border-stone-200/60 transition hover:border-brand-red/30">
+              <span class="w-12 h-12 rounded-xl bg-brand-red text-white font-display font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md">
+                01
+              </span>
+              <div>
+                <strong class="font-bold text-stone-900 text-base">Pick it up</strong>
+                <p class="text-xs text-stone-500">Made fresh at our café ready when you arrive.</p>
+              </div>
+            </div>
+
+            <!-- Service item 2 -->
+            <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-cream/60 border border-stone-200/60 transition hover:border-brand-red/30">
+              <span class="w-12 h-12 rounded-xl bg-brand-dark text-white font-display font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md">
+                02
+              </span>
+              <div>
+                <strong class="font-bold text-stone-900 text-base">Get it delivered</strong>
+                <p class="text-xs text-stone-500">To your door, hot and still delicious.</p>
+              </div>
+            </div>
+
+            <!-- Service metadata -->
+            <div class="p-4 rounded-2xl bg-brand-roasted text-brand-cream border border-stone-800 flex flex-col justify-center space-y-1">
+              <strong class="font-bold text-amber-400 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-phone text-xs"></i>
+                <span id="outletPhoneSim">+27 (0)11 458 9000</span>
+              </strong>
+              <span id="outletAddressSim" class="text-xs text-stone-300 font-medium truncate">124 Artisanal Way, Rosebank Outlet</span>
+              <span id="outletHoursSim" class="text-[11px] text-stone-400">Mon - Sun: 06:30 AM - 08:00 PM</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU INTRO & CATEGORIES GRID SECTION -->
+      <section id="categories" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+          <div>
+            <p class="text-xs font-black uppercase tracking-widest text-brand-red mb-1">THE GOOD STUFF</p>
+            <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-dark">Find your favourite.</h2>
+          </div>
+          <a class="inline-flex items-center gap-2 text-sm font-bold text-brand-dark hover:text-brand-red transition group" href="{{ url_for('shop.menu') }}">
+            <span>Full menu</span>
+            <span aria-hidden="true" class="group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+        </div>
+
+        <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {% for category in categories %}
+          <a class="group relative bg-white rounded-3xl p-6 border border-stone-200/80 hover:border-brand-red shadow-card hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-44 overflow-hidden" href="{{ url_for('shop.menu', category=category.slug) }}">
+            <div class="flex items-center justify-between">
+              <span class="font-display font-black text-2xl text-stone-300 group-hover:text-brand-red transition-colors">{{ '%02d'|format(loop.index) }}</span>
+              <span class="w-8 h-8 rounded-full bg-brand-cream group-hover:bg-brand-red group-hover:text-white text-stone-600 flex items-center justify-center text-sm font-bold transition-all" aria-hidden="true">↗</span>
+            </div>
+            <div>
+              <span class="font-display font-bold text-lg text-brand-dark group-hover:text-brand-red transition-colors block">{{ category.name }}</span>
+            </div>
+          </a>
+          {% else %}
+          <p class="bg-white p-8 rounded-3xl border border-dashed border-stone-300 text-center text-sm font-bold text-stone-600 col-span-full">Our menu is being prepared. Check back soon.</p>
+          {% endfor %}
+        </div>
+
+      </section>
+
+      <!-- FEATURED / BEST SELLERS SECTION (previewing featured and best-selling products) -->
+      <section id="featured" class="py-16 bg-white border-y border-stone-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+            <div>
+              <p class="text-xs font-black uppercase tracking-widest text-brand-red mb-1">A LITTLE SOMETHING SPECIAL</p>
+              <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-dark">House favourites.</h2>
+            </div>
+            <a class="inline-flex items-center gap-2 text-sm font-bold text-brand-dark hover:text-brand-red transition group" href="{{ url_for('shop.menu') }}">
+              <span>See everything</span>
+              <span aria-hidden="true" class="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+          </div>
+
+          {% set home_products = featured or best_sellers %}
+          {% if home_products %}
+          <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for product in home_products %}
+              {% include "partials/product_card.html" %}
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="bg-brand-cream p-8 rounded-3xl border border-dashed border-stone-300 text-center text-sm font-bold text-stone-600">Our house favourites are being prepared. Browse the full menu to find your next favourite.</p>
+          {% endif %}
+
+        </div>
+      </section>
+
+      <!-- BENEFIT BAND SECTION -->
+      <section class="py-14 bg-brand-dark text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-stone-800">
+            
+            <div class="flex flex-col items-center text-center pt-4 md:pt-0 md:px-4 space-y-1">
+              <span class="text-[11px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 px-3 py-1 rounded-full border border-brand-red/20 mb-1">
+                FRESHLY MADE
+              </span>
+              <strong class="font-display font-extrabold text-xl text-brand-cream">Every cup, made to order.</strong>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-8 md:pt-0 md:px-4 space-y-1">
+              <span class="text-[11px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 mb-1">
+                YOUR WAY
+              </span>
+              <strong class="font-display font-extrabold text-xl text-brand-cream">Pickup or delivery, you choose.</strong>
+            </div>
+
+            <div class="flex flex-col items-center text-center pt-8 md:pt-0 md:px-4 space-y-1">
+              <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 mb-1">
+                ONE GOOD STOP
+              </span>
+              <strong class="font-display font-extrabold text-xl text-brand-cream">Coffee, smoothies and something to eat.</strong>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- VIEW MODE 2: FLASK JINJA2 TEMPLATE EXPORT CODE -->
+    <div id="codeExportContainer" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
+          <div>
+            <h2 class="text-2xl font-display font-black text-brand-dark">Redesigned Jinja2 Template Snippet</h2>
+            <p class="text-xs text-stone-500">Copy this complete `templates/home.html` file into your Flask project.</p>
+          </div>
+          <button onclick="copyRawJinjaCode()" class="px-4 py-2.5 bg-brand-dark hover:bg-brand-roasted text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md">
+            <i class="fa-regular fa-copy"></i>
+            <span>Copy Jinja Code</span>
+          </button>
+        </div>
+
+        <pre class="bg-brand-dark text-stone-200 p-6 rounded-2xl text-xs font-mono overflow-x-auto border border-stone-800 leading-relaxed max-h-[600px]"><code id="rawJinjaCode">{% raw %}{% extends "base.html" %}
+{% block title %}Café Coffee Day | Coffee, made your way{% endblock %}
+
+{% block content %}
+{# PROMO BANNER STRIP #}
+{% if settings and settings.promo_banner %}
+<a class="promo-banner group relative bg-gradient-to-r from-brand-red via-red-600 to-amber-600 text-white text-xs py-3 px-4 flex items-center justify-center gap-3 font-semibold shadow-md overflow-hidden transition-all duration-300" href="{{ url_for('shop.menu') }}">
+  <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition"></div>
+  <span class="bg-white text-brand-red text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">
+    THIS WEEK AT THE CAFÉ
+  </span>
+  <span class="truncate font-medium text-amber-50">{{ settings.promo_banner }}</span>
+  <b aria-hidden="true" class="group-hover:translate-x-1 group-hover:-translate-y-0.5 transition-transform duration-200">↗</b>
+</a>
+{% endif %}
+
+{# HERO SECTION #}
+<section class="hero relative bg-brand-dark text-brand-cream overflow-hidden py-16 lg:py-24 border-b border-stone-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      
+      <div class="hero-copy lg:col-span-7 space-y-6 text-center lg:text-left">
+        <p class="eyebrow inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-bold text-amber-300 tracking-widest uppercase backdrop-blur-md">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          YOUR DAILY PAUSE, POURED FRESH
+        </p>
+
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-display font-black leading-[1.1] tracking-tight text-white">
+          Make today <br>
+          <em class="not-italic text-transparent bg-clip-text bg-gradient-to-r from-brand-red via-rose-300 to-amber-200 font-serif italic">a good day.</em>
+        </h1>
+
+        <p class="text-stone-300 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 font-light leading-relaxed">
+          From the first cappuccino to the last bite, your favourites are just around the corner.
+        </p>
+
+        <div class="hero-actions flex flex-wrap justify-center lg:justify-start items-center gap-4 pt-4">
+          <a class="button button-light px-8 py-4 bg-brand-red hover:bg-brand-redhover text-white font-extrabold rounded-2xl shadow-glow hover:scale-[1.02] transition duration-300 flex items-center gap-2 text-sm" href="{{ url_for('shop.menu') }}">
+            <span>Order now</span>
+            <span aria-hidden="true" class="text-base">↗</span>
+          </a>
+          <a class="hero-secondary px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl border border-white/15 backdrop-blur-md transition flex items-center gap-2 text-sm" href="{{ url_for('shop.menu') }}">
+            <span>Explore menu</span>
+            <span aria-hidden="true" class="text-base">↓</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5 relative">
+        <div class="relative mx-auto max-w-md lg:max-w-none">
+          <div class="hero-photo relative rounded-3xl overflow-hidden border-4 border-stone-800 shadow-2xl aspect-[4/5]" role="img" aria-label="Freshly brewed coffee on a café counter">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80" alt="Freshly brewed coffee on a café counter" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent"></div>
+          </div>
+
+          <div class="hero-stamp absolute -bottom-6 -left-6 sm:-left-8 w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-brand-red text-white p-2 shadow-2xl flex items-center justify-center border-4 border-brand-dark font-display font-extrabold text-xs text-center leading-tight">
+            BREWED<br>FOR YOU
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# SERVICE STRIP #}
+<section class="service-strip bg-white border-b border-stone-200/80 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      
+      <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-cream/60 border border-stone-200/60">
+        <span class="service-icon w-12 h-12 rounded-xl bg-brand-red text-white font-display font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md">01</span>
+        <p class="text-xs text-stone-500"><strong class="font-bold text-stone-900 text-base block">Pick it up</strong> Made fresh at our café</p>
+      </div>
+
+      <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-cream/60 border border-stone-200/60">
+        <span class="service-icon w-12 h-12 rounded-xl bg-brand-dark text-white font-display font-extrabold text-lg flex items-center justify-center shrink-0 shadow-md">02</span>
+        <p class="text-xs text-stone-500"><strong class="font-bold text-stone-900 text-base block">Get it delivered</strong> To your door, still delicious</p>
+      </div>
+
+      <div class="service-meta p-4 rounded-2xl bg-brand-roasted text-brand-cream border border-stone-800 flex flex-col space-y-1">
+        <strong class="font-bold text-amber-400 text-sm">{{ settings.contact_phone if settings and settings.contact_phone else 'Visit us today' }}</strong>
+        <span class="text-xs text-stone-300 font-medium">{{ settings.outlet_address if settings and settings.outlet_address else 'Café Coffee Day' }}</span>
+        <span class="text-[11px] text-stone-400">{{ settings.opening_hours if settings and settings.opening_hours else 'Hours confirmed by your café' }}</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# CATEGORIES SECTION #}
+<section class="section menu-intro py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="section-heading flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+    <div>
+      <p class="eyebrow text-xs font-black uppercase tracking-widest text-brand-red mb-1">THE GOOD STUFF</p>
+      <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-dark">Find your favourite.</h2>
+    </div>
+    <a class="text-link inline-flex items-center gap-2 text-sm font-bold text-brand-dark hover:text-brand-red transition" href="{{ url_for('shop.menu') }}">
+      <span>Full menu</span> <span aria-hidden="true">→</span>
+    </a>
+  </div>
+
+  <div class="category-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    {% for category in categories %}
+    <a class="category-tile group relative bg-white rounded-3xl p-6 border border-stone-200/80 hover:border-brand-red shadow-card hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-44 overflow-hidden" href="{{ url_for('shop.menu', category=category.slug) }}">
+      <div class="flex items-center justify-between">
+        <span class="category-number font-display font-black text-2xl text-stone-300 group-hover:text-brand-red transition-colors">0{{ loop.index }}</span>
+        <span class="category-arrow w-8 h-8 rounded-full bg-brand-cream group-hover:bg-brand-red group-hover:text-white text-stone-600 flex items-center justify-center text-sm font-bold transition-all" aria-hidden="true">↗</span>
+      </div>
+      <span class="font-display font-bold text-lg text-brand-dark group-hover:text-brand-red transition-colors block">{{ category.name }}</span>
+    </a>
+    {% else %}
+    <p class="empty-note bg-white p-8 rounded-3xl border border-dashed border-stone-300 text-center text-sm font-bold text-stone-600 col-span-full">
+      Our menu is being prepared. Check back soon.
+    </p>
+    {% endfor %}
+  </div>
+</section>
+
+{# FEATURED / BEST SELLERS PRODUCTS SECTION #}
+{% if featured %}
+<section class="section featured-section py-16 bg-white border-y border-stone-200/80">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="section-heading flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+      <div>
+        <p class="eyebrow text-xs font-black uppercase tracking-widest text-brand-red mb-1">A LITTLE SOMETHING SPECIAL</p>
+        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-dark">House favourites.</h2>
+      </div>
+      <a class="text-link inline-flex items-center gap-2 text-sm font-bold text-brand-dark hover:text-brand-red transition" href="{{ url_for('shop.menu') }}">See everything →</a>
+    </div>
+    <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for product in featured %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% elif best_sellers %}
+<section class="section featured-section py-16 bg-white border-y border-stone-200/80">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="section-heading flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+      <div>
+        <p class="eyebrow text-xs font-black uppercase tracking-widest text-brand-red mb-1">ORDERED AND LOVED</p>
+        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-brand-dark">Best sellers.</h2>
+      </div>
+      <a class="text-link inline-flex items-center gap-2 text-sm font-bold text-brand-dark hover:text-brand-red transition" href="{{ url_for('shop.menu') }}">See everything →</a>
+    </div>
+    <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for product in best_sellers %}
+        {% include "partials/product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# BENEFIT BAND SECTION #}
+<section class="benefit-band py-14 bg-brand-dark text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 divide-y md:divide-y-0 md:divide-x divide-stone-800 text-center">
+      <div class="pt-4 md:pt-0 md:px-4 space-y-1">
+        <span class="text-[11px] font-black uppercase tracking-widest text-brand-red bg-brand-red/10 px-3 py-1 rounded-full border border-brand-red/20 mb-1 inline-block">FRESHLY MADE</span>
+        <strong class="font-display font-extrabold text-xl text-brand-cream block">Every cup, made to order.</strong>
+      </div>
+      <div class="pt-8 md:pt-0 md:px-4 space-y-1">
+        <span class="text-[11px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 mb-1 inline-block">YOUR WAY</span>
+        <strong class="font-display font-extrabold text-xl text-brand-cream block">Pickup or delivery, you choose.</strong>
+      </div>
+      <div class="pt-8 md:pt-0 md:px-4 space-y-1">
+        <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20 mb-1 inline-block">ONE GOOD STOP</span>
+        <strong class="font-display font-extrabold text-xl text-brand-cream block">Coffee, smoothies and something to eat.</strong>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}{% endraw %}</code></pre>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-brand-dark text-brand-cream border-t border-stone-800 pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+      <div class="space-y-4">
+        <a class="flex items-center gap-3" href="#home">
+          <div class="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white">
+            <i class="fa-solid fa-mug-hot text-lg"></i>
+          </div>
+          <span class="font-display font-extrabold text-lg text-white tracking-wider">CAFÉ COFFEE DAY</span>
+        </a>
+        <p class="text-xs text-stone-400 leading-relaxed">
+          Freshly made, just for your day. Exceptional coffee beans handpicked and crafted with passion.
+        </p>
+      </div>
+      <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Quick Navigation</h4>
+        <ul class="space-y-2 text-xs text-stone-400">
+          <li><a href="{{ url_for('shop.menu') }}" class="hover:text-brand-red transition">Order from Menu</a></li>
+          <li><a href="#categories" class="hover:text-brand-red transition">Categories</a></li>
+          <li><a href="#featured" class="hover:text-brand-red transition">House Favourites</a></li>
+          <li><a href="{{ url_for('shop.track') }}" class="hover:text-brand-red transition">Track Order</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Opening Hours</h4>
+        <p class="text-xs text-stone-400 leading-relaxed">
+          Mon - Fri: 06:30 AM - 08:00 PM<br>
+          Sat - Sun: 07:30 AM - 09:00 PM
+        </p>
+      </div>
+      <div>
+        <h4 class="font-bold text-xs uppercase tracking-widest text-stone-300 mb-4">Café Newsletter</h4>
+        <div class="flex gap-2">
+          <input type="email" placeholder="Your email address" class="px-3.5 py-2 bg-stone-800 text-xs rounded-xl border border-stone-700 text-white w-full focus:outline-none focus:border-brand-red">
+          <button class="px-4 py-2 bg-brand-red hover:bg-brand-redhover text-white text-xs font-bold rounded-xl transition">
+            Join
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-stone-800/80 pt-6 text-center text-xs text-stone-500">
+      &copy; 2026 Café Coffee Day. All rights reserved.
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE PREVIEW SCRIPT LOGIC -->
+  <script>
+    function toggleMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      drawer.classList.toggle('translate-x-full');
+    }
+
+    function toggleViewMode() {
+      const live = document.getElementById('livePreviewContainer');
+      const code = document.getElementById('codeExportContainer');
+      const label = document.getElementById('viewToggleLabel');
+
+      if (live.classList.contains('hidden')) {
+        live.classList.remove('hidden');
+        code.classList.add('hidden');
+        label.innerText = 'View Jinja HTML';
+      } else {
+        live.classList.add('hidden');
+        code.classList.remove('hidden');
+        label.innerText = 'Back to Live Demo';
+      }
+    }
+
+    function togglePromoBannerSim() {
+      const wrapper = document.getElementById('promoBannerWrapper');
+      const isChecked = document.getElementById('togglePromoCheck').checked;
+      wrapper.style.display = isChecked ? 'block' : 'none';
+    }
+
+    function toggleEmptyCategoriesSim() {
+      const grid = document.getElementById('categoriesGrid');
+      const note = document.getElementById('emptyCategoriesNote');
+      const isChecked = document.getElementById('toggleEmptyCategories').checked;
+
+      if (isChecked) {
+        grid.classList.add('hidden');
+        note.classList.remove('hidden');
+      } else {
+        grid.classList.remove('hidden');
+        note.classList.add('hidden');
+      }
+    }
+
+    function copyRawJinjaCode() {
+      const rawText = document.getElementById('rawJinjaCode').innerText;
+      const textArea = document.createElement('textarea');
+      textArea.value = rawText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      const label = document.getElementById('viewToggleLabel');
+      const origText = label.innerText;
+      alert('Jinja2 code template copied to clipboard!');
+    }
+  </script>
+</body>
+</html>

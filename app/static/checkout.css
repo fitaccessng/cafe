@@ -1,0 +1,124 @@
+.checkout-form select,
+.checkout-form input,
+.checkout-form textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid #c9c5bf;
+  border-radius: 4px;
+  background: #fff;
+  color: #171717;
+  font-size: 14px;
+}
+
+.checkout-form select:focus,
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+  border-color: #ed102d;
+  box-shadow: 0 0 0 3px rgb(237 16 45 / 12%);
+}
+
+.checkout-form select:invalid {
+  color: #706d69;
+}
+
+.bank-transfer-panel {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid #dedbd5;
+  border-top: 4px solid #ed102d;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(8 8 8 / 7%);
+}
+
+.bank-transfer-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #dedbd5;
+}
+
+.bank-transfer-heading h2 {
+  margin: 2px 0 0;
+  font: 600 24px/1.1 var(--display);
+  text-transform: uppercase;
+}
+
+.bank-transfer-heading .eyebrow {
+  margin: 0;
+  color: #706d69;
+}
+
+.bank-transfer-icon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  place-items: center;
+  background: #ed102d;
+  color: #fff;
+  font-size: 19px;
+}
+
+.bank-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+  margin: 4px 0 0;
+}
+
+.bank-details > div {
+  padding: 13px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.bank-details dt {
+  color: #706d69;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bank-details dd {
+  overflow-wrap: anywhere;
+  margin: 3px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bank-details .bank-account-number {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bank-reference {
+  display: grid;
+  gap: 4px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: #f4f1ec;
+  font-size: 12px;
+}
+
+.bank-reference strong {
+  color: #ed102d;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.bank-transfer-note {
+  margin: 12px 0 0;
+  color: #706d69;
+  font-size: 11px;
+}
+
+@media (max-width: 620px) {
+  .bank-transfer-panel {
+    padding: 16px;
+  }
+
+  .bank-details {
+    grid-template-columns: 1fr;
+  }
+}

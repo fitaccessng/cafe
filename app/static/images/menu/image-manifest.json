@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "image_license_policy": "Only use images with recorded source, creator, and license metadata. Wikimedia Commons images must retain their stated license and attribution; Unsplash images must be used under the Unsplash License.",
+  "images": {
+    "cappuccino": {
+      "file": "cappuccino.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cappuccino_with_latte_art_on_Coffee_Right_in_Brno,_Brno-City_District.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Cappuccino_with_latte_art_on_Coffee_Right_in_Brno%2C_Brno-City_District.jpg/960px-Cappuccino_with_latte_art_on_Coffee_Right_in_Brno%2C_Brno-City_District.jpg",
+      "creator": "Frettie",
+      "license": "CC BY 3.0",
+      "alt": "Illustrative stock photograph: Cappuccino with latte art on Coffee Right in Brno, Brno-City District. This may differ from the café's actual product."
+    },
+    "cafe-latte": {
+      "file": "cafe-latte.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cafe_Latte.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Cafe_Latte.jpg/960px-Cafe_Latte.jpg",
+      "creator": "Alayna the Extravagant",
+      "license": "CC BY-SA 3.0",
+      "alt": "Illustrative stock photograph: Cafe Latte. This may differ from the café's actual product."
+    },
+    "americano": {
+      "file": "americano.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:A_cup_of_Americano_in_Lano_Coffee_(Palembang,_SS).jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/A_cup_of_Americano_in_Lano_Coffee_%28Palembang%2C_SS%29.jpg/960px-A_cup_of_Americano_in_Lano_Coffee_%28Palembang%2C_SS%29.jpg",
+      "creator": "Firzafp",
+      "license": "CC BY-SA 4.0",
+      "alt": "Illustrative stock photograph: A cup of Americano in Lano Coffee (Palembang, SS). This may differ from the café's actual product."
+    },
+    "flat-white": {
+      "file": "flat-white.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Flat_white_coffee_Highgate_Cricket_Club,_Crouch_End,_London_01.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Flat_white_coffee_Highgate_Cricket_Club%2C_Crouch_End%2C_London_01.jpg/960px-Flat_white_coffee_Highgate_Cricket_Club%2C_Crouch_End%2C_London_01.jpg",
+      "creator": "Acabashi",
+      "license": "CC BY-SA 4.0",
+      "alt": "Illustrative stock photograph: Flat white coffee Highgate Cricket Club, Crouch End, London 01. This may differ from the café's actual product."
+    },
+    "hot-chocolate": {
+      "file": "hot-chocolate.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:A_cup_of_almost_finished_hot_chocolate_with_marshmallows..jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/A_cup_of_almost_finished_hot_chocolate_with_marshmallows..jpg/960px-A_cup_of_almost_finished_hot_chocolate_with_marshmallows..jpg",
+      "creator": "ᐃᓄᒃᑎᑐᑦ",
+      "license": "CC0",
+      "alt": "Illustrative stock photograph: A cup of almost finished hot chocolate with marshmallows.. This may differ from the café's actual product."
+    },
+    "green-tea": {
+      "file": "green-tea.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cup_of_green_tea_and_tea_pot_on_table.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Cup_of_green_tea_and_tea_pot_on_table.jpg/960px-Cup_of_green_tea_and_tea_pot_on_table.jpg",
+      "creator": "Thomas Berg",
+      "license": "CC BY-SA 2.0",
+      "alt": "Illustrative stock photograph: Cup of green tea and tea pot on table. This may differ from the café's actual product."
+    },
+    "chai-latte": {
+      "file": "chai-latte.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Chai_Latte_-_T_@_The_Dials_2024-02-26.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Chai_Latte_-_T_%40_The_Dials_2024-02-26.jpg/960px-Chai_Latte_-_T_%40_The_Dials_2024-02-26.jpg",
+      "creator": "Andy Li",
+      "license": "CC0",
+      "alt": "Illustrative stock photograph: Chai Latte - T @ The Dials 2024-02-26. This may differ from the café's actual product."
+    },
+    "rooibos-tea": {
+      "file": "rooibos-tea.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cup_of_rooibos_tea_(23427608102).jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cup_of_rooibos_tea_%2823427608102%29.jpg/960px-Cup_of_rooibos_tea_%2823427608102%29.jpg",
+      "creator": "StockyPics",
+      "license": "CC0",
+      "alt": "Illustrative stock photograph: Cup of rooibos tea (23427608102). This may differ from the café's actual product."
+    },
+    "matcha-latte": {
+      "file": "matcha-latte.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Matcha_green_tea_latte_art.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Matcha_green_tea_latte_art.jpg/960px-Matcha_green_tea_latte_art.jpg",
+      "creator": "Jeff Nelson",
+      "license": "CC BY-SA 2.0",
+      "alt": "Illustrative stock photograph: Matcha green tea latte art. This may differ from the café's actual product."
+    },
+    "mixed-berry": {
+      "file": "mixed-berry.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Berry_smoothie_on_a_planterbox.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Berry_smoothie_on_a_planterbox.jpg/960px-Berry_smoothie_on_a_planterbox.jpg",
+      "creator": "Miscellaneous contributor",
+      "license": "CC0",
+      "alt": "Illustrative stock photograph: Berry smoothie on a planterbox. This may differ from the café's actual product."
+    },
+    "green-smoothie": {
+      "file": "green-smoothie.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Green_smoothie_(8222465502).jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Green_smoothie_%288222465502%29.jpg/960px-Green_smoothie_%288222465502%29.jpg",
+      "creator": "Lablascovegmenu",
+      "license": "CC BY 2.0",
+      "alt": "Illustrative stock photograph: Green smoothie (8222465502). This may differ from the café's actual product."
+    },
+    "blueberry-smoothie": {
+      "file": "blueberry-smoothie.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Blueberry_Smoothie.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Blueberry_Smoothie.jpg/960px-Blueberry_Smoothie.jpg",
+      "creator": "FitTasteTic",
+      "license": "CC BY-SA 2.0",
+      "alt": "Illustrative stock photograph: Blueberry Smoothie. This may differ from the café's actual product."
+    },
+    "chicken-mayo-sandwich-r22-review": {
+      "file": "chicken-mayo-sandwich-r22-review.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Chicken_sandwich_made_in_Kuwait.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Chicken_sandwich_made_in_Kuwait.jpg/960px-Chicken_sandwich_made_in_Kuwait.jpg",
+      "creator": "Di7ane",
+      "license": "CC BY-SA 4.0",
+      "alt": "Illustrative stock photograph: Chicken sandwich made in Kuwait. This may differ from the café's actual product."
+    }
+  }
+}

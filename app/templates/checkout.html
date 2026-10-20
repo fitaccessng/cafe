@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block title %}Checkout | Café Coffee Day{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}">{% endblock %}
+{% block content %}
+<section class="section checkout-section">
+  <div>
+    <p class="eyebrow">ALMOST THERE</p>
+    <h1 class="page-title">Checkout<span>.</span></h1>
+    {% if not settings.bank_name or not settings.bank_account_number %}
+    <p class="field-error" role="alert">Bank transfer details are not configured yet. Please contact the café before placing an order.</p>
+    {% endif %}
+    <form method="post" class="checkout-form" novalidate>
+      {{ form.hidden_tag() }}
+      <fieldset>
+        <legend>Your contact details</legend>
+        <div class="field-grid">
+          <div class="field">{{ form.customer_name.label }}{{ form.customer_name(autocomplete="name") }}{% for error in form.customer_name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+          <div class="field">{{ form.customer_phone.label }}{{ form.customer_phone(type="tel", autocomplete="tel") }}{% for error in form.customer_phone.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+          <div class="field field-wide">{{ form.customer_email.label }}{{ form.customer_email(type="email", autocomplete="email") }}<small>Optional. We use your phone number for order contact.</small>{% for error in form.customer_email.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Fulfillment</legend>
+        <div class="field-grid">
+          <div class="field">{{ form.fulfillment.label }}{{ form.fulfillment(id="fulfillment") }}{% for error in form.fulfillment.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+          <div class="field" id="pickup-field"{% if form.fulfillment.data != 'pickup' %} hidden{% endif %}>{{ form.pickup_name.label }}{{ form.pickup_name(autocomplete="name", required=true) }}{% for error in form.pickup_name.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+          <div class="field field-wide" id="delivery-field"{% if form.fulfillment.data != 'delivery' %} hidden{% endif %}>
+            {{ form.delivery_zone.label }}{{ form.delivery_zone(required=true) }}{% for error in form.delivery_zone.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+            {{ form.delivery_address.label }}{{ form.delivery_address(autocomplete="street-address", required=true) }}{% for error in form.delivery_address.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+            {{ form.delivery_instructions.label }}{{ form.delivery_instructions(rows="2") }}{% for error in form.delivery_instructions.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+          </div>
+          <div class="field field-wide" id="order-notes-field"{% if form.fulfillment.data != 'delivery' %} hidden{% endif %}>{{ form.order_notes.label }}{{ form.order_notes(rows="2") }}{% for error in form.order_notes.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+        </div>
+        {% if form.fulfillment.choices|length <= 1 %}<p class="field-error" role="alert">Pickup and delivery are currently unavailable. <a href="{{ url_for('admin.settings') }}">An administrator must enable a fulfillment option.</a></p>{% endif %}
+        <p class="muted">Delivery areas are the places currently serviced by the café. Ask the café administrator to add a place that is missing.</p>
+        {% if settings.delivery_enabled and not delivery_zones %}<p class="field-error" role="alert">Delivery is unavailable until an administrator adds delivery areas in <a href="{{ url_for('admin.settings') }}">Business Settings</a>.</p>{% endif %}
+        <p class="muted">Pickup estimate: {{ settings.pickup_prep_minutes ~ ' minutes' if settings.pickup_prep_minutes is not none else 'to be confirmed by the outlet' }}. Delivery estimate: {{ settings.delivery_estimate_minutes ~ ' minutes' if settings.delivery_estimate_minutes is not none else 'to be confirmed by the outlet' }}.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Bank transfer</legend>
+        {% if settings.bank_name and settings.bank_account_number %}
+        <div class="bank-transfer-panel">
+          <div class="bank-transfer-heading"><span class="bank-transfer-icon" aria-hidden="true"><i class="fa-solid fa-building-columns"></i></span><div><span class="eyebrow">BANK TRANSFER DETAILS</span><h2>{{ settings.bank_name }}</h2></div></div>
+          <dl class="bank-details">
+            {% if settings.bank_account_name %}<div><dt>Account holder</dt><dd>{{ settings.bank_account_name }}</dd></div>{% endif %}
+            <div><dt>Account type</dt><dd>{{ settings.bank_account_type or 'Not specified' }}</dd></div>
+            <div><dt>Account number</dt><dd class="bank-account-number">{{ settings.bank_account_number }}</dd></div>
+            <div><dt>Branch code</dt><dd>{{ settings.bank_branch_code or 'Not specified' }}</dd></div>
+          </dl>
+          <p class="bank-reference"><strong>Payment reference</strong><span>Your unique order code, shown after placing your order</span></p>
+          <p class="bank-transfer-note">Your order is confirmed once the café verifies the bank transfer.</p>
+        </div>
+        {% else %}
+        <p>Bank-transfer details will appear here once configured by the café.</p>
+        {% endif %}
+      </fieldset>
+      <div class="terms-field">
+        <label>{{ form.terms_acknowledged() }} {{ form.terms_acknowledged.label.text }}</label>
+        {% for error in form.terms_acknowledged.errors %}<small class="field-error">{{ error }}</small>{% endfor %}
+        <small>By placing this order, you confirm the items and fulfillment details above.</small>
+      </div>
+      {% if form.errors %}<p class="field-error" role="alert">Please review the highlighted fields.</p>{% endif %}
+      {% if form.fulfillment.choices|length > 1 %}{{ form.submit(class="button button-red checkout-submit") }}{% else %}<button class="button button-red checkout-submit" type="button" disabled>Ordering unavailable</button>{% endif %}
+    </form>
+  </div>
+  <aside class="order-summary">
+    <h2>Your order</h2>
+    {% for variant, quantity in lines %}<div class="summary-line"><span>{{ variant.product.name }} <small>{{ variant.name }} × {{ quantity }}</small></span><strong>{{ (variant.price_minor * quantity)|zar }}</strong></div>{% endfor %}
+    <div class="summary-line"><span>Items subtotal</span><strong>{{ subtotal|zar }}</strong></div>
+    <div class="summary-line"><span>Delivery</span><strong id="delivery-total" data-pickup="0" data-delivery="{{ settings.delivery_fee_minor }}">{{ delivery_fee|zar }}</strong></div>
+    <div class="summary-line"><span>Tax</span><strong>{{ tax|zar }}</strong></div>
+    <div class="summary-line summary-total"><span>Total</span><strong id="checkout-total" data-subtotal="{{ subtotal }}" data-tax="{{ tax }}">{{ total|zar }}</strong></div>
+    <p>The final total is recalculated using current menu prices, delivery fees and tax when you place your order.</p>
+  </aside>
+</section>
+<script src="{{ url_for('static', filename='checkout.js') }}" defer></script>
+{% endblock %}

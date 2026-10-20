@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block title %}Order {{ order.reference }} | Admin{% endblock %}
+{% block content %}
+<section class="section admin-section">
+  <a class="back-link" href="{{ url_for('admin.orders') }}">← Orders</a>
+  <div class="admin-heading">
+    <div><p class="eyebrow">{{ order.reference }}</p><h1 class="page-title">{{ order.customer_name }}</h1></div>
+    <span class="status-pill">{{ order.status.replace('_', ' ').title() }}</span>
+  </div>
+  <div class="detail-columns">
+    <div class="admin-block">
+      <h2>Order details</h2>
+      <p>{{ order.customer_phone }}{% if order.customer_email %}<br>{{ order.customer_email }}{% endif %}</p>
+      <p>{{ order.fulfillment.title() }} · {{ order.payment_method.replace('_', ' ').title() }} · {{ order.payment_status.replace('_', ' ').title() }}</p>
+      {% if order.fulfillment == 'pickup' %}
+      <div class="estimate-note"><strong>Pickup redemption code</strong><br><code>{{ order.reference }}</code><br>Confirm this code before handing over the order.</div>
+      <p>Pickup for {{ order.pickup_name }}</p>
+      {% else %}
+      <p><strong>Delivery area:</strong> {{ order.delivery_zone }}<br><strong>Address:</strong> {{ order.delivery_address }}{% if order.delivery_instructions %}<br><strong>Instructions:</strong> {{ order.delivery_instructions }}{% endif %}</p>
+      {% endif %}
+      {% if order.order_notes %}<p><strong>Order notes:</strong> {{ order.order_notes }}</p>{% endif %}
+      {% for item in order.items %}<div class="summary-line"><span>{{ item.product_name }} · {{ item.variant_name }} × {{ item.quantity }}</span><strong>{{ item.line_total_minor|zar }}</strong></div>{% endfor %}
+      <div class="summary-line"><span>Subtotal</span><strong>{{ order.subtotal_minor|zar }}</strong></div>
+      {% if order.delivery_fee_minor %}<div class="summary-line"><span>Delivery fee</span><strong>{{ order.delivery_fee_minor|zar }}</strong></div>{% endif %}
+      {% if order.tax_minor %}<div class="summary-line"><span>Tax</span><strong>{{ order.tax_minor|zar }}</strong></div>{% endif %}
+      <div class="summary-line summary-total"><span>Total</span><strong>{{ order.total_minor|zar }}</strong></div>
+      <h3>Status history</h3>
+      {% for entry in order.status_history %}<p class="history-item"><strong>{{ entry.to_status.replace('_', ' ').title() }}</strong> · {{ entry.created_at.strftime('%d %b %Y %H:%M') }}{% if entry.reason %}<br>{{ entry.reason }}{% endif %}</p>{% endfor %}
+    </div>
+    <aside class="admin-block">
+      <h2>Update status</h2>
+      {% if form.status.choices %}
+      <form method="post" action="{{ url_for('admin.update_order_status', order_id=order.id) }}" class="checkout-form">
+        {{ form.hidden_tag() }}
+        <div class="field">{{ form.status.label }}{{ form.status() }}</div>
+        <div class="field">{{ form.reason.label }}{{ form.reason() }}</div>
+        <button class="button button-red" type="submit">Update order</button>
+      </form>
+      {% else %}<p>No further status transitions available.</p>{% endif %}
+      {% if order.payment_method != 'online' and order.payment_status != 'paid' %}
+      <h2>Record bank transfer</h2>
+      <form method="post" action="{{ url_for('admin.collect_payment', order_id=order.id) }}" class="checkout-form">
+        {{ payment_form.hidden_tag() }}
+        <div class="field">{{ payment_form.amount.label }}{{ payment_form.amount(value='%.2f'|format(order.total_minor / 100)) }}</div>
+        <div class="field">{{ payment_form.method.label }}{{ payment_form.method() }}</div>
+        <button class="button button-dark" type="submit">Confirm payment received</button>
+      </form>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock %}
