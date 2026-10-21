@@ -10,7 +10,8 @@ from .extensions import csrf, db, limiter, login_manager, migrate
 def create_app(config_name=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(get_config(config_name))
-    os.makedirs(app.instance_path, exist_ok=True)
+    if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite:"):
+        os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)

@@ -36,6 +36,13 @@ def test_customer_pages_and_health(client):
     assert client.get("/health").json == {"status": "ok"}
 
 
+def test_database_write_check_skips_sqlite(app):
+    result = app.test_cli_runner().invoke(args=["check-database-writes"])
+
+    assert result.exit_code == 0
+    assert "configured database is not PostgreSQL" in result.output
+
+
 def test_customer_can_order_and_track_privately(app, client):
     with app.app_context():
         variant = db.session.scalar(select(ProductVariant).where(ProductVariant.name == "Small"))

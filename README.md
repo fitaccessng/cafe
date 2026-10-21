@@ -69,6 +69,24 @@ gunicorn --workers 3 --bind 0.0.0.0:8000 wsgi:app
 
 Health check: `GET /health` verifies database connectivity. Put TLS termination and request-size limits at the reverse proxy. Restrict admin access operationally, rotate secrets, retain logs only as long as needed, and never log gateway secrets or full payment credentials.
 
+### DockHive
+
+DockHive deploys this Flask app through App Hosting and Drone; it does not use a `.drone.yml` file. Select the GitHub repository in DockHive App Hosting and choose Deploy with Drone, or install and sign in to the `hivepod` CLI and run `hivepod deploy`. The CLI redeploys the app already linked to this folder. Keep production values in DockHive's encrypted app environment, not in `.env.example` or Git. Set `FLASK_ENV=production`, `SECRET_KEY`, `DATABASE_URL`, `REDIS_URL`, and `CANONICAL_ORIGIN` there.
+
+The admin created with local SQLite is not copied into production. Before deploying a version that requires the database schema, connect to the production PostgreSQL database from a trusted terminal using its current DockHive connection string. Allow your current IP in that database's firewall first. Enter the URL into the shell's hidden prompt so it is not saved in shell history, then check write readiness before migrating:
+
+```sh
+read -s "DATABASE_URL?Production database URL: "
+export DATABASE_URL
+printf '\n'
+python -m flask --app wsgi check-database-writes
+python -m flask --app wsgi db upgrade
+python -m flask --app wsgi create-admin --email YOUR_EMAIL --name "Your Name"
+unset DATABASE_URL
+```
+
+The write check reports whether the connection is to a replica, read-only, or lacks `CREATE` on the current schema. If it fails, stop there: use the primary/write connection or ask DockHive support to fix the database role/transaction mode. Do not open the database firewall to the internet. Once migration and admin creation succeed, deploy with Drone or `hivepod deploy`. The local SQLite admin must be recreated with the production command; passwords are not transferred between databases.
+
 ## Migrations
 
 Create a reviewed migration after model changes:

@@ -39,6 +39,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "/tmp/cafe-uploads")
     DEBUG = False
     SESSION_COOKIE_SECURE = True
     PREFERRED_URL_SCHEME = "https"

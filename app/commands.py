@@ -5,7 +5,7 @@ from pathlib import Path
 
 import click
 from flask import current_app
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from .extensions import db
 from .models import BusinessSettings, Category, Product, ProductVariant, User
@@ -233,6 +233,35 @@ def register_commands(app):
             click.echo("Explicit override enabled: existing menu-managed product values were reconciled to the source catalogue.")
 
     app.cli.add_command(seed_menu, "seed-catalogue")
+
+    @app.cli.command("check-database-writes")
+    def check_database_writes():
+        """Check PostgreSQL write readiness without changing database data."""
+        if db.engine.dialect.name != "postgresql":
+            click.echo("PostgreSQL write checks skipped: the configured database is not PostgreSQL.")
+            return
+
+        row = db.session.execute(text("""
+            SELECT pg_is_in_recovery() AS is_replica,
+                   current_setting('transaction_read_only') AS transaction_read_only,
+                   current_user AS database_user,
+                   has_schema_privilege(
+                       current_user,
+                       COALESCE(current_schema(), 'public'),
+                       'CREATE'
+                   ) AS can_create_in_schema
+        """)).one()
+        click.echo(f"Database user: {row.database_user}")
+        click.echo(f"Connected to replica: {'yes' if row.is_replica else 'no'}")
+        click.echo(f"Transaction read-only: {row.transaction_read_only}")
+        click.echo(f"Can create in current schema: {'yes' if row.can_create_in_schema else 'no'}")
+
+        if row.is_replica or row.transaction_read_only == "on" or not row.can_create_in_schema:
+            raise click.ClickException(
+                "Database is not migration-ready. Use the primary/write connection and "
+                "ask the provider to enable writes or grant schema CREATE permission."
+            )
+        click.echo("Database is ready for migrations.")
 
     @app.cli.command("create-admin")
     @click.option("--email", prompt=True)
