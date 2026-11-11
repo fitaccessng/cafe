@@ -89,7 +89,7 @@ python -m flask --app wsgi create-admin --email YOUR_EMAIL --name "Your Name"
 unset DATABASE_URL SECRET_KEY REDIS_URL
 ```
 
-Keep the live app's own `SECRET_KEY` and Redis URL configured in DockHive's encrypted app environment; the temporary key and in-memory limiter above are only for the CLI process and must not be deployed. If the production schema is already current, skip `db upgrade` and run only `create-admin` after the write check succeeds.
+Keep the live app's own `SECRET_KEY` and Redis URL configured in DockHive's encrypted app environment; the temporary key and in-memory limiter above are only for the CLI process and must not be deployed. If the production schema is already current, skip `db upgrade` and run only `create-admin` after the write check succeeds. If the email already belongs to an account, `create-admin` asks for confirmation before promoting it to admin, activating it, and setting a new password.
 
 The write check reports whether the connection is to a replica, read-only, or lacks `CREATE` on the current schema. If it fails, stop there: use the primary/write connection or ask DockHive support to fix the database role/transaction mode. Do not open the database firewall to the internet. Once migration and admin creation succeed, deploy with Drone or `hivepod deploy`. The local SQLite admin must be recreated with the production command; passwords are not transferred between databases.
 

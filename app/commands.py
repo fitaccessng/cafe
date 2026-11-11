@@ -270,17 +270,24 @@ def register_commands(app):
         """Create or promote an administrator with an interactively entered password."""
         normalized_email = email.strip().lower()
         user = db.session.scalar(select(User).where(User.email == normalized_email))
+        existing_account = user is not None
         if user:
-            click.echo("An account with that email already exists.", err=True)
-            raise click.Abort()
+            click.confirm(
+                f"Promote {normalized_email} to admin and replace its password?",
+                abort=True,
+            )
         password = click.prompt("Password (at least 12 characters)", hide_input=True, confirmation_prompt=True)
         if len(password) < 12:
             raise click.ClickException("Password must contain at least 12 characters.")
-        user = User(email=normalized_email, full_name=name.strip(), role="admin")
+        if user is None:
+            user = User(email=normalized_email)
+            db.session.add(user)
+        user.full_name = name.strip()
+        user.role = "admin"
+        user.active = True
         user.set_password(password)
-        db.session.add(user)
         db.session.commit()
-        click.echo("Administrator created.")
+        click.echo("Existing account promoted to administrator." if existing_account else "Administrator created.")
 
     @app.cli.command("create-staff")
     @click.option("--email", prompt=True)

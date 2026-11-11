@@ -62,6 +62,28 @@ def test_database_write_check_skips_sqlite(app):
     assert "configured database is not PostgreSQL" in result.output
 
 
+def test_create_admin_promotes_existing_account_and_resets_password(app):
+    with app.app_context():
+        user = User(full_name="Kelvin", email="kelvin@cafeday.com", role="customer", active=False)
+        user.set_password("old-customer-password")
+        db.session.add(user)
+        db.session.commit()
+        user_id = user.id
+
+    result = app.test_cli_runner().invoke(
+        args=["create-admin", "--email", "kelvin@cafeday.com", "--name", "Kelvin"],
+        input="y\nnew-admin-password-123\nnew-admin-password-123\n",
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "Existing account promoted to administrator." in result.output
+    with app.app_context():
+        user = db.session.get(User, user_id)
+        assert user.role == "admin"
+        assert user.active is True
+        assert user.check_password("new-admin-password-123")
+
+
 def test_customer_can_order_and_track_privately(app, client):
     with app.app_context():
         variant = db.session.scalar(select(ProductVariant).where(ProductVariant.name == "Small"))
