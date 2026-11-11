@@ -15,7 +15,7 @@ from sqlalchemy import func, select
 from werkzeug.utils import secure_filename
 
 from ..extensions import db
-from ..forms import AdminAccountForm, AdminCredentialsForm, CollectPaymentForm, ProductForm, SettingsForm, StatusForm
+from ..forms import AdminAccountForm, AdminCredentialsForm, AdminPromotionForm, CollectPaymentForm, ProductForm, SettingsForm, StatusForm
 from ..models import AuditLog, BusinessSettings, Category, Order, OrderItem, OrderStatusHistory, Payment, Product, ProductVariant, User
 from ..services import ORDER_TRANSITIONS, money_to_minor
 
@@ -50,8 +50,9 @@ def dashboard():
     unpaid = db.session.scalar(select(func.coalesce(func.sum(Order.total_minor), 0)).where(Order.payment_status.in_(("unpaid", "pending", "failed", "partially_paid")))) or 0
     best_sellers = db.session.execute(select(func.sum(OrderItem.quantity), OrderItem.product_name).group_by(OrderItem.product_name).order_by(func.sum(OrderItem.quantity).desc()).limit(5)).all()
     account_form = AdminAccountForm()
+    promotion_form = AdminPromotionForm()
     credentials_form = AdminCredentialsForm(email=current_user.email)
-    return render_template("admin/dashboard.html", orders_today=orders_today, counts=counts, successful=successful, unpaid=unpaid, best_sellers=best_sellers, account_form=account_form, credentials_form=credentials_form)
+    return render_template("admin/dashboard.html", orders_today=orders_today, counts=counts, successful=successful, unpaid=unpaid, best_sellers=best_sellers, account_form=account_form, promotion_form=promotion_form, credentials_form=credentials_form)
 
 
 @bp.post("/accounts")
@@ -72,6 +73,35 @@ def create_account():
     db.session.add(AuditLog(actor_id=current_user.id, action="account.created", entity_type="user", entity_id=str(user.id), details=f"Created {user.role} account."))
     db.session.commit()
     flash("Account created.", "success")
+    return redirect(url_for("admin.dashboard"))
+
+
+@bp.post("/accounts/promote")
+@roles_required("admin")
+def promote_account():
+    form = AdminPromotionForm()
+    if not form.validate_on_submit():
+        flash("Enter a valid account email and matching password of at least 12 characters.", "error")
+        return redirect(url_for("admin.dashboard"))
+    email = form.email.data.strip().lower()
+    user = db.session.scalar(select(User).where(User.email == email))
+    if user is None:
+        flash("No account with that email was found.", "error")
+        return redirect(url_for("admin.dashboard"))
+    if user.role == "admin" and user.active:
+        flash("That account is already an active administrator.", "error")
+        return redirect(url_for("admin.dashboard"))
+    user.role = "admin"
+    user.active = True
+    user.set_password(form.password.data)
+    db.session.add(AuditLog(
+        actor_id=current_user.id,
+        action="account.promoted_to_admin",
+        entity_type="user",
+        entity_id=str(user.id),
+    ))
+    db.session.commit()
+    flash("Account promoted to administrator. Share the new password with its owner securely.", "success")
     return redirect(url_for("admin.dashboard"))
 
 

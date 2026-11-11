@@ -503,11 +503,73 @@ def test_admin_can_create_staff_account(app, client):
         assert user.password_hash != "new-staff-password-12"
 
 
+def test_admin_can_create_administrator_account_that_can_sign_in(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    response = client.post("/admin/accounts", data={
+        "full_name": "New Admin",
+        "email": "new.admin@example.com",
+        "role": "admin",
+        "password": "new-admin-password-123",
+    })
+    assert response.status_code == 302
+    with app.app_context():
+        user = db.session.scalar(select(User).where(User.email == "new.admin@example.com"))
+        assert user is not None
+        assert user.role == "admin"
+        assert user.active is True
+        assert user.check_password("new-admin-password-123")
+
+    client.post("/admin/logout")
+    login = client.post("/admin/login", data={
+        "email": "new.admin@example.com",
+        "password": "new-admin-password-123",
+    })
+    assert login.status_code == 302
+    assert client.get("/admin").status_code == 200
+
+
+def test_admin_can_promote_existing_account_from_dashboard(app, client):
+    with app.app_context():
+        user = User(full_name="Kelvin", email="kelvin@cafeday.com", role="customer", active=False)
+        user.set_password("old-customer-password")
+        db.session.add(user)
+        db.session.commit()
+        user_id = user.id
+
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    dashboard = client.get("/admin")
+    assert b"Promote an existing account" in dashboard.data
+    response = client.post("/admin/accounts/promote", data={
+        "email": "KELVIN@cafeday.com",
+        "password": "new-admin-password-123",
+        "confirm_password": "new-admin-password-123",
+    })
+    assert response.status_code == 302
+    with app.app_context():
+        user = db.session.get(User, user_id)
+        assert user.role == "admin"
+        assert user.active is True
+        assert user.check_password("new-admin-password-123")
+
+    client.post("/admin/logout")
+    login = client.post("/admin/login", data={
+        "email": "kelvin@cafeday.com",
+        "password": "new-admin-password-123",
+    })
+    assert login.status_code == 302
+    assert client.get("/admin").status_code == 200
+
+
 def test_staff_cannot_create_account(client):
     client.post("/admin/login", data={"email": "staff@example.com", "password": "correct-horse-battery-2"})
     assert client.post("/admin/accounts", data={
         "full_name": "Unauthorized", "email": "unauthorized@example.com", "role": "admin",
         "password": "new-staff-password-12",
+    }).status_code == 403
+    assert client.post("/admin/accounts/promote", data={
+        "email": "customer@example.com",
+        "password": "new-admin-password-123",
+        "confirm_password": "new-admin-password-123",
     }).status_code == 403
 
 

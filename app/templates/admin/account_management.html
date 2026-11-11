@@ -12,12 +12,22 @@
 {% if current_user.role == 'admin' %}
 <section class="admin-block">
   <div class="section-heading"><h2>Team accounts</h2></div>
+  <p class="muted">Create a new staff or administrator login, or promote an existing account below. Administrator accounts can access all admin tools.</p>
   <form method="post" action="{{ url_for('admin.create_account') }}" class="checkout-form">
     {{ account_form.hidden_tag() }}
     {% for field in [account_form.full_name, account_form.email, account_form.role, account_form.password] %}
     <div class="field">{{ field.label }}{{ field() }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
     {% endfor %}
     <button class="button button-red" type="submit">Create account</button>
+  </form>
+  <div class="section-heading"><h3>Promote an existing account</h3></div>
+  <p class="muted">The account becomes an active administrator. Set a new password here and share it with the account owner securely.</p>
+  <form method="post" action="{{ url_for('admin.promote_account') }}" class="checkout-form">
+    {{ promotion_form.hidden_tag() }}
+    {% for field in [promotion_form.email, promotion_form.password, promotion_form.confirm_password] %}
+    <div class="field">{{ field.label }}{{ field(autocomplete='email' if field.name == 'email' else 'new-password') }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    {% endfor %}
+    <button class="button button-red" type="submit">{{ promotion_form.submit.label.text }}</button>
   </form>
 </section>
 {% endif %}

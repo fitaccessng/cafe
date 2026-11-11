@@ -17,6 +17,16 @@ class AdminAccountForm(FlaskForm):
     submit = SubmitField("Create account")
 
 
+class AdminPromotionForm(FlaskForm):
+    email = StringField("Existing account email", validators=[DataRequired(), Email(), Length(max=254)])
+    password = PasswordField("Set administrator password", validators=[DataRequired(), Length(min=12, max=128)])
+    confirm_password = PasswordField(
+        "Confirm administrator password",
+        validators=[DataRequired(), EqualTo("password", message="Passwords must match."), Length(max=128)],
+    )
+    submit = SubmitField("Promote to administrator")
+
+
 class AdminCredentialsForm(FlaskForm):
     email = StringField("Login email", validators=[DataRequired(), Email(), Length(max=254)])
     current_password = PasswordField("Current password", validators=[DataRequired(), Length(max=128)])
