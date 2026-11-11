@@ -33,7 +33,7 @@ def upgrade():
             batch_op.add_column(sa.Column('image_review_required', sa.Boolean(), nullable=True))
 
     op.execute("UPDATE product SET image_alt = '' WHERE image_alt IS NULL")
-    op.execute("UPDATE product SET image_review_required = 0 WHERE image_review_required IS NULL")
+    op.execute("UPDATE product SET image_review_required = FALSE WHERE image_review_required IS NULL")
     current = columns()
     with op.batch_alter_table('product', schema=None) as batch_op:
         if current['image_alt']['nullable']:

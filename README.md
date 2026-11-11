@@ -30,7 +30,7 @@ The `seed-menu` command is repeatable: it creates missing source rows, adds miss
 
 Product images live in `app/static/images/menu/`. `scripts/fetch_menu_images.py` downloads only the curated Wikimedia Commons sources in `image-sources.json`, checks response type/signature, converts to optimized local JPEGs, and records creator, source and license metadata in `image-manifest.json`. Failed downloads are not marked verified; the seeder uses labeled local category placeholders and lists image gaps. Photo credits are visible at `/image-credits`. Stock photographs are illustrative, not depictions of the café's actual servings.
 
-Current local media review: 13 of 32 catalogue entries have verified locally stored photo files; 19 retain labeled category/neutral placeholders. Photo gaps: Chicken & Mayo Sandwich (R25), Egg Mayo Sandwich, Club Sandwich, Cheese & Tomato Sandwich, Cheese & Tomato Croissants, Chicken Mayo Croissant, Plain Croissants, Mango, Strawberry, Peanut Butter, Oatmeal and Cookies & Cream smoothies, Earl Grey Tea, Chocolate, Banana, Berry and Bubblegum Milkshakes, plus “Assorted Giant Coddies”. The duplicate R22 sandwich entry and Coddies remain unpublished; Coddies has a neutral placeholder. See [image-review-report.md](app/static/images/menu/image-review-report.md).
+Current local media review: 16 of 32 catalogue entries have verified locally stored photo files; 16 use labeled category/neutral placeholders. Photo gaps: Chicken & Mayo Sandwich (R25), Egg Mayo Sandwich, Club Sandwich, Cheese & Tomato Sandwich, Cheese & Tomato Croissants, Chicken Mayo Croissant, Plain Croissants, Strawberry, Peanut Butter, Oatmeal and Cookies & Cream smoothies, Chocolate, Banana, Berry and Bubblegum Milkshakes, plus “Assorted Giant Coddies”. The duplicate R22 sandwich entry and Coddies remain unpublished; Coddies has a neutral placeholder. Wikimedia Commons rate-limited several remaining downloads, so they are not marked verified. See [image-review-report.md](app/static/images/menu/image-review-report.md).
 
 Business settings default to disabled fulfillment. Sign in at `/admin/login`; configure the outlet, hours, serviceable delivery places (one per line), delivery fee, tax rate, pickup/delivery estimates, bank transfer details and promotions before accepting orders. Checkout currently accepts bank transfer only. An initial admin is created only with the interactive `create-admin` command. No default credentials are shipped. Customers may create accounts at `/account/register` for their own `/orders` history; guest orders remain available only through their private tracking token. Pickup customers receive a unique order reference to present as their redemption code.
 
@@ -73,17 +73,23 @@ Health check: `GET /health` verifies database connectivity. Put TLS termination 
 
 DockHive deploys this Flask app through App Hosting and Drone; it does not use a `.drone.yml` file. Select the GitHub repository in DockHive App Hosting and choose Deploy with Drone, or install and sign in to the `hivepod` CLI and run `hivepod deploy`. The CLI redeploys the app already linked to this folder. Keep production values in DockHive's encrypted app environment, not in `.env.example` or Git. Set `FLASK_ENV=production`, `SECRET_KEY`, `DATABASE_URL`, `REDIS_URL`, and `CANONICAL_ORIGIN` there.
 
-The admin created with local SQLite is not copied into production. Before deploying a version that requires the database schema, connect to the production PostgreSQL database from a trusted terminal using its current DockHive connection string. Allow your current IP in that database's firewall first. Enter the URL into the shell's hidden prompt so it is not saved in shell history, then check write readiness before migrating:
+The admin created with local SQLite is not copied into production. Before deploying a version that requires the database schema, connect to the production PostgreSQL database from a trusted terminal using its current DockHive connection string. Allow your current IPv4 address in that database's firewall first. Enter the production `DATABASE_URL` at a hidden prompt so it is not saved in shell history. The local Flask CLI does not need to connect to Redis, so use in-memory rate-limit storage for this one-off command. Generate a temporary `SECRET_KEY` rather than retrieving or replacing the live app's secret:
 
 ```sh
-read -s "DATABASE_URL?Production database URL: "
+printf 'Production database URL: '
+IFS= read -r -s DATABASE_URL
+echo
 export DATABASE_URL
-printf '\n'
-python -m flask --app wsgi check-database-writes
-python -m flask --app wsgi db upgrade
+export REDIS_URL=memory://
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+export FLASK_ENV=production
+python -m flask --app wsgi check-database-writes &&
+python -m flask --app wsgi db upgrade &&
 python -m flask --app wsgi create-admin --email YOUR_EMAIL --name "Your Name"
-unset DATABASE_URL
+unset DATABASE_URL SECRET_KEY REDIS_URL
 ```
+
+Keep the live app's own `SECRET_KEY` and Redis URL configured in DockHive's encrypted app environment; the temporary key and in-memory limiter above are only for the CLI process and must not be deployed. If the production schema is already current, skip `db upgrade` and run only `create-admin` after the write check succeeds.
 
 The write check reports whether the connection is to a replica, read-only, or lacks `CREATE` on the current schema. If it fails, stop there: use the primary/write connection or ask DockHive support to fix the database role/transaction mode. Do not open the database firewall to the internet. Once migration and admin creation succeed, deploy with Drone or `hivepod deploy`. The local SQLite admin must be recreated with the production command; passwords are not transferred between databases.
 

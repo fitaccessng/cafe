@@ -1,12 +1,28 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, FileField, HiddenField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Email, InputRequired, Length, NumberRange, Optional
+from wtforms.validators import DataRequired, Email, EqualTo, InputRequired, Length, NumberRange, Optional
 
 
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email(), Length(max=254)])
     password = PasswordField("Password", validators=[DataRequired(), Length(max=128)])
     submit = SubmitField("Sign in")
+
+
+class AdminAccountForm(FlaskForm):
+    full_name = StringField("Full name", validators=[DataRequired(), Length(min=2, max=120)])
+    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=254)])
+    role = SelectField("Access level", choices=[("staff", "Staff"), ("admin", "Administrator")], validators=[DataRequired()])
+    password = PasswordField("Temporary password", validators=[DataRequired(), Length(min=12, max=128)])
+    submit = SubmitField("Create account")
+
+
+class AdminCredentialsForm(FlaskForm):
+    email = StringField("Login email", validators=[DataRequired(), Email(), Length(max=254)])
+    current_password = PasswordField("Current password", validators=[DataRequired(), Length(max=128)])
+    new_password = PasswordField("New password", validators=[Optional(), Length(min=12, max=128), EqualTo("confirm_password", message="Passwords must match.")])
+    confirm_password = PasswordField("Confirm new password", validators=[Optional(), Length(max=128)])
+    submit = SubmitField("Update login details")
 
 
 class CheckoutForm(FlaskForm):
@@ -54,10 +70,10 @@ class ProductForm(FlaskForm):
     image_file = FileField("Upload product image")
     small_price = StringField("Small price (R)", validators=[Optional(), Length(max=15)])
     medium_price = StringField("Medium price (R)", validators=[Optional(), Length(max=15)])
-    regular_price = StringField("Regular price (R)", validators=[Optional(), Length(max=15)])
+    large_price = StringField("Large price (R)", validators=[Optional(), Length(max=15)])
     active = BooleanField("Published")
     available = BooleanField("Available")
-    featured = BooleanField("Featured")
+    featured = BooleanField("Show in House favourites")
     stock_quantity = IntegerField("Stock quantity (blank = not tracked)", validators=[Optional(), NumberRange(min=0, max=1000000)])
     confirm_review = BooleanField("I confirm the product name and prices are correct")
     submit = SubmitField("Save product")

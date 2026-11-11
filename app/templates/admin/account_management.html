@@ -1,0 +1,23 @@
+<section class="admin-block">
+  <div class="section-heading"><h2>Login details</h2></div>
+  <form method="post" action="{{ url_for('admin.update_credentials') }}" class="checkout-form">
+    {{ credentials_form.hidden_tag() }}
+    <div class="field">{{ credentials_form.email.label }}{{ credentials_form.email() }}{% for error in credentials_form.email.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    <div class="field">{{ credentials_form.current_password.label }}{{ credentials_form.current_password() }}{% for error in credentials_form.current_password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    <div class="field">{{ credentials_form.new_password.label }}{{ credentials_form.new_password() }}{% for error in credentials_form.new_password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    <div class="field">{{ credentials_form.confirm_password.label }}{{ credentials_form.confirm_password() }}{% for error in credentials_form.confirm_password.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    <button class="button button-red" type="submit">Update login details</button>
+  </form>
+</section>
+{% if current_user.role == 'admin' %}
+<section class="admin-block">
+  <div class="section-heading"><h2>Team accounts</h2></div>
+  <form method="post" action="{{ url_for('admin.create_account') }}" class="checkout-form">
+    {{ account_form.hidden_tag() }}
+    {% for field in [account_form.full_name, account_form.email, account_form.role, account_form.password] %}
+    <div class="field">{{ field.label }}{{ field() }}{% for error in field.errors %}<small class="field-error">{{ error }}</small>{% endfor %}</div>
+    {% endfor %}
+    <button class="button button-red" type="submit">Create account</button>
+  </form>
+</section>
+{% endif %}

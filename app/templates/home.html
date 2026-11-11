@@ -103,6 +103,142 @@
     .animate-stamp {
       animation: rotateStamp 20s linear infinite;
     }
+
+    .house-favourite-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid #e8e1d8;
+      border-radius: 12px;
+      background: #fffdfa;
+      box-shadow: 0 12px 28px rgba(44, 30, 21, .08);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+    .house-favourite-card:hover {
+      transform: translateY(-4px);
+      border-color: #d7b58b;
+      box-shadow: 0 18px 34px rgba(44, 30, 21, .14);
+    }
+
+    .house-favourite-image {
+      position: relative;
+      display: block;
+      height: 225px;
+      overflow: hidden;
+      background: #eee4d8;
+    }
+
+    .house-favourite-image img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform .55s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    .house-favourite-card:hover .house-favourite-image img {
+      transform: scale(1.04);
+    }
+
+    .house-favourite-tag {
+      position: absolute;
+      z-index: 1;
+      top: 13px;
+      left: 13px;
+      padding: 6px 9px;
+      border-radius: 3px;
+      background: #fffdfa;
+      color: #8d291f;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      box-shadow: 0 2px 8px rgba(20, 13, 10, .16);
+    }
+
+    .house-favourite-image .product-category {
+      position: absolute;
+      z-index: 1;
+      bottom: 12px;
+      left: 14px;
+      color: white;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 5px rgba(0, 0, 0, .7);
+    }
+
+    .house-favourite-card .product-card-body {
+      display: flex;
+      min-height: 145px;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .house-favourite-card .product-name {
+      color: #211712;
+      font-family: "Cinzel", Georgia, serif;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .house-favourite-card .product-card-body p {
+      display: -webkit-box;
+      overflow: hidden;
+      margin: 6px 0 0;
+      color: #75685d;
+      font-size: 10px;
+      line-height: 1.55;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    .house-favourite-quick-add {
+      display: flex;
+      gap: 8px;
+    }
+
+    .house-favourite-quick-add select {
+      min-width: 0;
+      flex: 1;
+      padding: 8px;
+      border-color: #ded4c8;
+      background: #fffdfa;
+      color: #30221a;
+      font-size: 11px;
+    }
+
+    .house-favourite-quick-add .add-button {
+      flex: 0 0 36px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      color: white;
+      background: #ed102d;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .house-favourite-quick-add .add-button:hover {
+      transform: translateY(-1px);
+      background: #c90d26;
+    }
+
+    @media (max-width: 560px) {
+      .house-favourite-image { height: 155px; }
+      .house-favourite-card .product-card-body { min-height: 151px; gap: 13px; padding: 12px 10px; }
+      .house-favourite-card .product-name { font-size: 12px; }
+      .house-favourite-card .product-card-body p { font-size: 9px; }
+      .house-favourite-quick-add { gap: 5px; }
+      .house-favourite-quick-add select { padding: 7px 4px; font-size: 9px; }
+      .house-favourite-quick-add .add-button { flex-basis: 31px; width: 31px; height: 34px; }
+    }
   </style>
 </head>
 <body class="bg-brand-cream text-brand-dark font-sans antialiased min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
@@ -119,9 +255,7 @@
         
         <!-- Brand Logo -->
         <a class="flex items-center gap-3 group" href="{{ url_for('shop.home') }}">
-          <div class="w-11 h-11 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-300">
-            <i class="fa-solid fa-mug-hot text-xl"></i>
-          </div>
+          <img class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
           <div class="flex flex-col">
             <span class="font-display font-black text-lg sm:text-xl tracking-wider text-brand-dark group-hover:text-brand-red transition-colors">
               CAFÉ COFFEE DAY
@@ -180,9 +314,7 @@
       <div>
         <div class="flex items-center justify-between pb-6 border-b border-stone-100">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white">
-              <i class="fa-solid fa-mug-hot text-lg"></i>
-            </div>
+            <img class="h-10 w-auto object-contain" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
             <span class="font-display font-bold text-base text-brand-dark">Café Coffee Day</span>
           </div>
           <button onclick="toggleMobileMenu()" class="p-2 text-stone-400 hover:text-stone-700">
@@ -387,10 +519,8 @@
 
       </section>
 
-      <!-- FEATURED / BEST SELLERS SECTION (previewing featured and best-selling products) -->
       <section id="featured" class="py-16 bg-white border-y border-stone-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
           <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
             <div>
               <p class="text-xs font-black uppercase tracking-widest text-brand-red mb-1">A LITTLE SOMETHING SPECIAL</p>
@@ -406,13 +536,13 @@
           {% if home_products %}
           <div class="product-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for product in home_products %}
-              {% include "partials/product_card.html" %}
+              {% set is_house_featured = loop.first %}
+              {% include "partials/home_product_card.html" %}
             {% endfor %}
           </div>
           {% else %}
           <p class="bg-brand-cream p-8 rounded-3xl border border-dashed border-stone-300 text-center text-sm font-bold text-stone-600">Our house favourites are being prepared. Browse the full menu to find your next favourite.</p>
           {% endif %}
-
         </div>
       </section>
 
@@ -650,9 +780,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
       <div class="space-y-4">
         <a class="flex items-center gap-3" href="#home">
-          <div class="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center text-white">
-            <i class="fa-solid fa-mug-hot text-lg"></i>
-          </div>
+          <img class="h-10 w-auto object-contain" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
           <span class="font-display font-extrabold text-lg text-white tracking-wider">CAFÉ COFFEE DAY</span>
         </a>
         <p class="text-xs text-stone-400 leading-relaxed">
@@ -692,6 +820,17 @@
 
   <!-- INTERACTIVE PREVIEW SCRIPT LOGIC -->
   <script>
+    document.addEventListener('error', (event) => {
+      const image = event.target;
+      if (!(image instanceof HTMLImageElement) || !image.matches('.house-favourite-image img') || !image.dataset.fallback) {
+        return;
+      }
+      const fallback = image.dataset.fallback;
+      image.removeAttribute('data-fallback');
+      image.src = fallback;
+      image.alt = image.dataset.fallbackAlt;
+    }, true);
+
     function toggleMobileMenu() {
       const drawer = document.getElementById('mobileDrawer');
       drawer.classList.toggle('translate-x-full');

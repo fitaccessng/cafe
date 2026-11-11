@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from io import BytesIO
 import json
 import re
 from pathlib import Path
@@ -34,6 +35,24 @@ def test_customer_pages_and_health(client):
     assert client.get("/cart").status_code == 200
     assert client.get("/track").status_code == 200
     assert client.get("/health").json == {"status": "ok"}
+
+
+def test_homepage_house_favourites_render_styled_add_to_cart_cards(app, client):
+    with app.app_context():
+        product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
+        product.featured = True
+        db.session.commit()
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert b"House favourites." in response.data
+    assert b"house-favourite-card" in response.data
+    assert b"house-favourite-image img" in response.data
+    assert b'data-fallback="/static/images/menu/fallback-coffee.svg"' in response.data
+    assert b"BARISTA PICK" in response.data
+    assert b"Choose size for Cappuccino" in response.data
+    assert b"R 25.00" in response.data
 
 
 def test_database_write_check_skips_sqlite(app):
@@ -186,7 +205,7 @@ def test_availability_filter_keeps_sold_out_products_discoverable(app, client):
     with app.app_context():
         product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
         sold_out = Product(category_id=product.category_id, name="Sold Out Mocha", slug="sold-out-mocha", active=True, available=True, stock_quantity=0)
-        sold_out.variants.append(ProductVariant(name="Regular", price_minor=3000))
+        sold_out.variants.append(ProductVariant(name="Large", price_minor=3000))
         db.session.add(sold_out)
         db.session.commit()
     available = client.get("/menu?availability=available")
@@ -346,6 +365,35 @@ def test_catalogue_seed_never_changes_existing_order_snapshots(app):
         assert order.items[0].line_total_minor == 5000
 
 
+def test_regular_variant_migration_renames_and_merges_without_changing_snapshots():
+    import importlib.util
+
+    from alembic.migration import MigrationContext
+    from alembic.operations import Operations
+    from sqlalchemy import create_engine
+
+    migration_path = Path(__file__).parents[1] / "migrations/versions/1b7d2a4c9e61_rename_regular_variant_to_large.py"
+    spec = importlib.util.spec_from_file_location("variant_size_migration", migration_path)
+    migration = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migration)
+    engine = create_engine("sqlite://")
+    with engine.begin() as connection:
+        connection.exec_driver_sql("CREATE TABLE product_variant (id INTEGER PRIMARY KEY, product_id INTEGER NOT NULL, name VARCHAR(60) NOT NULL, UNIQUE(product_id, name))")
+        connection.exec_driver_sql("CREATE TABLE order_item (id INTEGER PRIMARY KEY, variant_id INTEGER, variant_name VARCHAR(60) NOT NULL)")
+        connection.exec_driver_sql("INSERT INTO product_variant (id, product_id, name) VALUES (1, 10, 'Regular'), (2, 20, 'Regular'), (3, 20, 'Large')")
+        connection.exec_driver_sql("INSERT INTO order_item (id, variant_id, variant_name) VALUES (1, 1, 'Regular'), (2, 2, 'Regular')")
+        context = MigrationContext.configure(connection)
+        with Operations.context(context):
+            migration.upgrade()
+        variants = connection.exec_driver_sql("SELECT product_id, name FROM product_variant ORDER BY product_id").all()
+        orders = connection.exec_driver_sql("SELECT variant_id, variant_name FROM order_item ORDER BY id").all()
+        assert variants == [(10, "Large"), (20, "Large")]
+        assert orders == [(1, "Regular"), (3, "Regular")]
+        with Operations.context(context):
+            migration.downgrade()
+        assert connection.exec_driver_sql("SELECT product_id, name FROM product_variant ORDER BY product_id").all() == [(10, "Regular"), (20, "Regular")]
+
+
 def test_menu_page_reads_published_database_catalogue(app, client):
     with app.app_context():
         category = db.session.scalar(select(Category).where(Category.slug == "coffee"))
@@ -418,6 +466,45 @@ def test_admin_is_protected_and_role_gated(client):
     assert client.get("/admin/orders").status_code == 200
 
 
+def test_admin_can_create_staff_account(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    response = client.post("/admin/accounts", data={
+        "full_name": "New Staff", "email": "new.staff@example.com", "role": "staff",
+        "password": "new-staff-password-12", "submit": "Create account",
+    })
+    assert response.status_code == 302
+    with app.app_context():
+        user = db.session.scalar(select(User).where(User.email == "new.staff@example.com"))
+        assert user is not None
+        assert user.role == "staff"
+        assert user.check_password("new-staff-password-12")
+        assert user.password_hash != "new-staff-password-12"
+
+
+def test_staff_cannot_create_account(client):
+    client.post("/admin/login", data={"email": "staff@example.com", "password": "correct-horse-battery-2"})
+    assert client.post("/admin/accounts", data={
+        "full_name": "Unauthorized", "email": "unauthorized@example.com", "role": "admin",
+        "password": "new-staff-password-12",
+    }).status_code == 403
+
+
+def test_admin_can_update_login_email_and_password(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    response = client.post("/admin/account/credentials", data={
+        "email": "owner@example.com", "current_password": "correct-horse-battery-1",
+        "new_password": "replacement-password-34", "confirm_password": "replacement-password-34",
+    })
+    assert response.status_code == 302
+    with app.app_context():
+        admin = db.session.scalar(select(User).where(User.email == "owner@example.com"))
+        assert admin is not None
+        assert admin.check_password("replacement-password-34")
+    client.post("/admin/logout")
+    login = client.post("/admin/login", data={"email": "owner@example.com", "password": "replacement-password-34"})
+    assert login.status_code == 302
+
+
 def test_admin_can_update_status_and_collect_pay_later(app, client):
     with app.app_context():
         variant = db.session.scalar(select(ProductVariant).where(ProductVariant.name == "Small"))
@@ -460,14 +547,123 @@ def test_admin_can_set_product_stock(app, client):
     editor = client.get(f"/admin/products/{product_id}/edit")
     assert editor.status_code == 200
     assert b"Stock quantity" in editor.data
+    assert b"Show in House favourites" in editor.data
+    response = client.post(f"/admin/products/{product_id}/edit", data={
+        "name": "Cappuccino", "category_id": str(category_id), "description": "Updated espresso with steamed milk.",
+        "image_url": "", "small_price": "27.50", "medium_price": "35.00", "large_price": "",
+        "stock_quantity": "5", "active": "y", "available": "y", "featured": "y",
+    }, follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Product saved successfully." in response.data
+    assert b'class="flash success"' in response.data
+    with app.app_context():
+        product = db.session.get(Product, product_id)
+        assert product.stock_quantity == 5
+        assert product.description == "Updated espresso with steamed milk."
+        assert product.featured is True
+        assert next(variant for variant in product.variants if variant.name == "Small").price_minor == 2750
+    assert b"House favourite" in client.get("/admin/products").data
+    menu = client.get("/menu?category=coffee")
+    assert b"Updated espresso with steamed milk." in menu.data
+    assert b"R 27.50" in menu.data
+    detail = client.get("/product/cappuccino")
+    assert b"R 27.50" in detail.data
+    home = client.get("/")
+    assert b"Cappuccino" in home.data
+    assert b"R 27.50" in home.data
+
+
+def test_admin_can_save_price_without_reuploading_existing_local_image(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    with app.app_context():
+        product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
+        product.image_url = "/static/images/menu/cappuccino.jpg"
+        product.image_review_required = True
+        product_id, category_id = product.id, product.category_id
+        db.session.commit()
+
     response = client.post(f"/admin/products/{product_id}/edit", data={
         "name": "Cappuccino", "category_id": str(category_id), "description": "Espresso with steamed milk.",
-        "image_url": "", "small_price": "25.00", "medium_price": "35.00", "regular_price": "",
-        "stock_quantity": "0", "active": "y", "available": "y", "featured": "",
+        "image_url": "/static/images/menu/cappuccino.jpg", "small_price": "27.50", "medium_price": "35.00",
+        "large_price": "", "stock_quantity": "", "active": "y", "available": "y",
     })
+
     assert response.status_code == 302
     with app.app_context():
-        assert db.session.get(Product, product_id).stock_quantity == 0
+        product = db.session.get(Product, product_id)
+        assert product.image_url == "/static/images/menu/cappuccino.jpg"
+        assert next(variant for variant in product.variants if variant.name == "Small").price_minor == 2750
+
+
+def test_admin_file_upload_replaces_existing_image_even_if_url_field_is_populated(app, client, tmp_path):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    app.config["UPLOAD_FOLDER"] = str(tmp_path)
+    with app.app_context():
+        product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
+        product.image_url = "/static/images/menu/cappuccino.jpg"
+        product_id, category_id = product.id, product.category_id
+        db.session.commit()
+
+    response = client.post(f"/admin/products/{product_id}/edit", data={
+        "name": "Cappuccino", "category_id": str(category_id), "description": "Espresso with steamed milk.",
+        "image_url": "/static/images/menu/cappuccino.jpg", "image_file": (BytesIO(b"\x89PNG\r\n\x1a\nimage"), "new.png"),
+        "small_price": "25.00", "medium_price": "35.00", "large_price": "",
+        "stock_quantity": "", "active": "y", "available": "y",
+    }, content_type="multipart/form-data")
+
+    assert response.status_code == 302
+    with app.app_context():
+        product = db.session.get(Product, product_id)
+        assert product.image_url.startswith("/media/")
+        assert product.image_review_required is False
+        assert Path(tmp_path, product.image_url.removeprefix("/media/")).read_bytes() == b"\x89PNG\r\n\x1a\nimage"
+
+
+def test_admin_invalid_price_shows_error_on_the_price_field(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    with app.app_context():
+        product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
+        product_id, category_id = product.id, product.category_id
+        original_price = next(variant.price_minor for variant in product.variants if variant.name == "Small")
+    response = client.post(f"/admin/products/{product_id}/edit", data={
+        "name": "Cappuccino", "category_id": str(category_id), "description": "Espresso with steamed milk.",
+        "image_url": "", "small_price": "", "medium_price": "not-a-price", "large_price": "32.00",
+        "stock_quantity": "", "active": "y", "available": "y",
+    })
+    assert response.status_code == 400
+    medium_label = response.data.index(b"Medium price (R)")
+    large_label = response.data.index(b"Large price (R)")
+    price_error = response.data.index(b"Enter a valid amount in rand.")
+    assert medium_label < price_error < large_label
+    assert b"Product was not saved. Please fix:" in response.data
+    assert b"Medium price (R): Enter a valid amount in rand." in response.data
+    assert b"Product saved successfully." not in response.data
+    with app.app_context():
+        product = db.session.get(Product, product_id)
+        assert next(variant.price_minor for variant in product.variants if variant.name == "Small") == original_price
+
+
+def test_admin_edit_preserves_legacy_regular_price_as_large(app, client):
+    client.post("/admin/login", data={"email": "admin@example.com", "password": "correct-horse-battery-1"})
+    with app.app_context():
+        product = db.session.scalar(select(Product).where(Product.slug == "cappuccino"))
+        product_id, category_id = product.id, product.category_id
+        product.variants.append(ProductVariant(name="Regular", price_minor=3200))
+        db.session.commit()
+    editor = client.get(f"/admin/products/{product_id}/edit")
+    assert b'value="32.00"' in editor.data
+    updated = client.post(f"/admin/products/{product_id}/edit", data={
+        "name": "Cappuccino", "category_id": str(category_id), "description": "Espresso with steamed milk.",
+        "image_url": "", "small_price": "25.00", "medium_price": "35.00", "large_price": "32.00",
+        "stock_quantity": "", "active": "y", "available": "y", "featured": "",
+    })
+    assert updated.status_code == 302
+    with app.app_context():
+        product = db.session.get(Product, product_id)
+        legacy = next(variant for variant in product.variants if variant.price_minor == 3200)
+        assert legacy.name == "Large"
+        assert legacy.active is True
+    assert b"Large R 32.00" in client.get("/admin/products").data
 
 
 def test_unknown_tracking_token_does_not_reveal_order(client):

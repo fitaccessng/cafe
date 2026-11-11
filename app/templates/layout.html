@@ -18,13 +18,17 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='site.css') }}">
   {% block extra_head %}{% endblock %}
-  <style>[hidden] { display: none !important; }</style>
+  <style>
+    [hidden] { display: none !important; }
+    .brand-logo { display: block; width: auto; height: 48px; object-fit: contain; }
+    .site-footer .brand-logo { height: 38px; }
+  </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="{{ url_for('shop.home') }}">
-      <span class="brand-mark" aria-hidden="true">C</span>
+      <img class="brand-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
       <span>CAFÉ COFFEE DAY<small>GOOD COFFEE. GOOD DAY.</small></span>
     </a>
     <nav aria-label="Main navigation">
@@ -60,7 +64,10 @@
   <main>{% block content %}{% endblock %}</main>
 
   <footer class="site-footer">
-    <a class="brand" href="{{ url_for('shop.home') }}">CAFÉ COFFEE DAY</a>
+    <a class="brand" href="{{ url_for('shop.home') }}">
+      <img class="brand-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+      <span>CAFÉ COFFEE DAY</span>
+    </a>
     <nav aria-label="Footer navigation">
       <a href="{{ url_for('shop.menu') }}">Menu</a>
       <a href="{{ url_for('shop.track') }}">Track order</a>

@@ -105,6 +105,30 @@
       "creator": "Di7ane",
       "license": "CC BY-SA 4.0",
       "alt": "Illustrative stock photograph: Chicken sandwich made in Kuwait. This may differ from the café's actual product."
+    },
+    "earl-grey-tea": {
+      "file": "earl-grey-tea.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Cup_of_Earl_Gray.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Cup_of_Earl_Gray.jpg/960px-Cup_of_Earl_Gray.jpg",
+      "creator": "David Wilmot",
+      "license": "CC BY 2.0",
+      "alt": "Illustrative stock photograph: Cup of Earl Gray. This may differ from the café's actual product."
+    },
+    "mango": {
+      "file": "mango.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Mango_Smoothie,_Petra_Restaurant,_2026_(01).jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Mango_Smoothie%2C_Petra_Restaurant%2C_2026_%2801%29.jpg/960px-Mango_Smoothie%2C_Petra_Restaurant%2C_2026_%2801%29.jpg",
+      "creator": "Bahnfrend",
+      "license": "CC BY-SA 4.0",
+      "alt": "Illustrative stock photograph: Mango Smoothie, Petra Restaurant, 2026 (01). This may differ from the café's actual product."
+    },
+    "strawberry-milkshake": {
+      "file": "strawberry-milkshake.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Strawberry_milk_shake.jpg",
+      "source_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Strawberry_milk_shake.jpg/960px-Strawberry_milk_shake.jpg",
+      "creator": "Renee Comet",
+      "license": "Public domain",
+      "alt": "Illustrative stock photograph: Strawberry milk shake. This may differ from the café's actual product."
     }
   }
 }

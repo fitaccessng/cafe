@@ -15,8 +15,8 @@ from sqlalchemy import func, select
 from werkzeug.utils import secure_filename
 
 from ..extensions import db
-from ..forms import CollectPaymentForm, ProductForm, SettingsForm, StatusForm
-from ..models import AuditLog, BusinessSettings, Category, Order, OrderItem, OrderStatusHistory, Payment, Product, ProductVariant
+from ..forms import AdminAccountForm, AdminCredentialsForm, CollectPaymentForm, ProductForm, SettingsForm, StatusForm
+from ..models import AuditLog, BusinessSettings, Category, Order, OrderItem, OrderStatusHistory, Payment, Product, ProductVariant, User
 from ..services import ORDER_TRANSITIONS, money_to_minor
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -49,7 +49,55 @@ def dashboard():
     successful = db.session.scalar(select(func.coalesce(func.sum(Payment.amount_minor), 0)).where(Payment.status == "paid")) or 0
     unpaid = db.session.scalar(select(func.coalesce(func.sum(Order.total_minor), 0)).where(Order.payment_status.in_(("unpaid", "pending", "failed", "partially_paid")))) or 0
     best_sellers = db.session.execute(select(func.sum(OrderItem.quantity), OrderItem.product_name).group_by(OrderItem.product_name).order_by(func.sum(OrderItem.quantity).desc()).limit(5)).all()
-    return render_template("admin/dashboard.html", orders_today=orders_today, counts=counts, successful=successful, unpaid=unpaid, best_sellers=best_sellers)
+    account_form = AdminAccountForm()
+    credentials_form = AdminCredentialsForm(email=current_user.email)
+    return render_template("admin/dashboard.html", orders_today=orders_today, counts=counts, successful=successful, unpaid=unpaid, best_sellers=best_sellers, account_form=account_form, credentials_form=credentials_form)
+
+
+@bp.post("/accounts")
+@roles_required("admin")
+def create_account():
+    form = AdminAccountForm()
+    if not form.validate_on_submit():
+        flash("Enter a name, valid email, access level and password of at least 12 characters.", "error")
+        return redirect(url_for("admin.dashboard"))
+    email = form.email.data.strip().lower()
+    if db.session.scalar(select(User.id).where(User.email == email)):
+        flash("An account with that email already exists.", "error")
+        return redirect(url_for("admin.dashboard"))
+    user = User(full_name=form.full_name.data.strip(), email=email, role=form.role.data)
+    user.set_password(form.password.data)
+    db.session.add(user)
+    db.session.flush()
+    db.session.add(AuditLog(actor_id=current_user.id, action="account.created", entity_type="user", entity_id=str(user.id), details=f"Created {user.role} account."))
+    db.session.commit()
+    flash("Account created.", "success")
+    return redirect(url_for("admin.dashboard"))
+
+
+@bp.post("/account/credentials")
+@roles_required("admin", "staff")
+def update_credentials():
+    form = AdminCredentialsForm()
+    if not form.validate_on_submit() or not current_user.check_password(form.current_password.data):
+        flash("Login details were not updated. Check the form and current password.", "error")
+        return redirect(url_for("admin.dashboard"))
+    email = form.email.data.strip().lower()
+    if db.session.scalar(select(User.id).where(User.email == email, User.id != current_user.id)):
+        flash("An account with that email already exists.", "error")
+        return redirect(url_for("admin.dashboard"))
+    changes = []
+    if email != current_user.email:
+        current_user.email = email
+        changes.append("email")
+    if form.new_password.data:
+        current_user.set_password(form.new_password.data)
+        changes.append("password")
+    if changes:
+        db.session.add(AuditLog(actor_id=current_user.id, action="account.credentials_updated", entity_type="user", entity_id=str(current_user.id), details=f"Updated {', '.join(changes)}."))
+        db.session.commit()
+    flash("Login details updated." if changes else "Login email is unchanged.", "success")
+    return redirect(url_for("admin.dashboard"))
 
 
 @bp.get("/orders")
@@ -210,7 +258,10 @@ def product_form(item):
         form.stock_quantity.data = item.stock_quantity
         form.small_price.data = next((f"{v.price_minor / 100:.2f}" for v in item.variants if v.name.lower() == "small"), "")
         form.medium_price.data = next((f"{v.price_minor / 100:.2f}" for v in item.variants if v.name.lower() == "medium"), "")
-        form.regular_price.data = next((f"{v.price_minor / 100:.2f}" for v in item.variants if v.name.lower() == "regular"), "")
+        form.large_price.data = next(
+            (f"{variant.price_minor / 100:.2f}" for variant in item.variants if variant.name.lower() == "large"),
+            next((f"{variant.price_minor / 100:.2f}" for variant in item.variants if variant.name.lower() == "regular"), ""),
+        )
         form.image_alt.data = item.image_alt
     if form.validate_on_submit():
         name = form.name.data.strip()
@@ -219,22 +270,30 @@ def product_form(item):
         if collision:
             slug = f"{slug}-{item.id if item else 'new'}"
         prices = []
-        for variant_name, value in (("Small", form.small_price.data), ("Medium", form.medium_price.data), ("Regular", form.regular_price.data)):
+        for variant_name, value, price_field in (
+            ("Small", form.small_price.data, form.small_price),
+            ("Medium", form.medium_price.data, form.medium_price),
+            ("Large", form.large_price.data, form.large_price),
+        ):
             if value:
                 try:
                     prices.append((variant_name, money_to_minor(value)))
                 except ValueError as error:
-                    form.errors["small_price"] = [str(error)]
+                    price_field.errors.append(str(error))
                     return render_template("admin/product_form.html", form=form, item=item), 400
         if not prices:
-            form.errors["regular_price"] = ["Enter at least one variant price."]
+            form.large_price.errors.append("Enter at least one variant price.")
             return render_template("admin/product_form.html", form=form, item=item), 400
         uploaded = form.image_file.data
+        has_upload = bool(uploaded and uploaded.filename)
         image_url = (form.image_url.data or "").strip()
-        if image_url and not image_url.startswith(("https://", "http://", "/media/")):
-            form.image_url.errors.append("Use an http(s) image URL or upload an image.")
+        current_image_url = item.image_url if item else ""
+        image_changed = bool(image_url and image_url != current_image_url)
+        allowed_local_image = image_url.startswith(("/media/", "/static/images/menu/"))
+        if image_changed and not has_upload and not image_url.startswith(("https://", "http://")) and not allowed_local_image:
+            form.image_url.errors.append("Use an http(s) image URL, choose a local menu image, or upload an image.")
             return render_template("admin/product_form.html", form=form, item=item), 400
-        if uploaded and uploaded.filename:
+        if has_upload:
             extension = Path(secure_filename(uploaded.filename)).suffix.lower()
             raw = uploaded.stream.read(5 * 1024 * 1024 + 1)
             signatures = {".png": b"\x89PNG\r\n\x1a\n", ".jpg": b"\xff\xd8\xff", ".jpeg": b"\xff\xd8\xff", ".webp": b"RIFF"}
@@ -254,7 +313,7 @@ def product_form(item):
         item.description = (form.description.data or "").strip()
         item.image_url = image_url or item.image_url
         item.image_alt = (form.image_alt.data or "").strip() or item.image_alt or f"Illustrative product image for {item.name}."
-        if image_url:
+        if image_changed or has_upload:
             item.image_review_required = False
         item.active, item.available, item.featured = bool(form.active.data), bool(form.available.data), bool(form.featured.data)
         item.stock_quantity = form.stock_quantity.data
@@ -264,6 +323,10 @@ def product_form(item):
                 item.active = False
         db.session.flush()
         existing = {variant.name: variant for variant in item.variants}
+        legacy_large = existing.pop("Regular", None)
+        if "Large" not in existing and legacy_large and any(name == "Large" for name, _ in prices):
+            legacy_large.name = "Large"
+            existing["Large"] = legacy_large
         keep = set()
         for variant_name, price in prices:
             keep.add(variant_name)
@@ -277,7 +340,7 @@ def product_form(item):
                 variant.active = False
         db.session.add(AuditLog(actor_id=current_user.id, action="product.saved", entity_type="product", entity_id=str(item.id)))
         db.session.commit()
-        flash("Product saved.", "success")
+        flash("Product saved successfully.", "success")
         return redirect(url_for("admin.products"))
     return render_template("admin/product_form.html", form=form, item=item)
 
@@ -396,4 +459,3 @@ def report_csv():
     response.headers["Content-Type"] = "text/csv"
     response.headers["Content-Disposition"] = "attachment; filename=cafe-orders.csv"
     return response
-

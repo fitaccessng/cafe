@@ -5,6 +5,7 @@ Flask-Migrate>=4.1,<5
 Flask-Login>=0.6,<1
 Flask-WTF>=1.2,<2
 Flask-Limiter>=3.12,<5
+redis>=5,<7
 email-validator>=2.2,<3
 gunicorn>=23,<24
 psycopg[binary]>=3.2,<4
